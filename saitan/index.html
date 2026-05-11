@@ -1089,6 +1089,15 @@
     const timeStr = pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
     const applicationId = APPLICATION_ID_PREFIX + '-' + dateStr + '-' + timeStr;
 
+    // URL クエリから UTM パラメータを取得（広告計測用）
+    // CRM API は .passthrough() で未知フィールドを受け付け、crm_inflows.utm_params に格納される
+    const urlParams = new URLSearchParams(window.location.search);
+    const utm = {};
+    for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+      const v = urlParams.get(key);
+      if (v) utm[key] = v;
+    }
+
     const payload = {
       source:        LP_SOURCE,
       name:          formData.name,
@@ -1098,6 +1107,7 @@
       feeling:       formData.feeling,
       status:        formData.status,
       applicationId: applicationId,
+      ...utm,
     };
 
     window.dataLayer = window.dataLayer || [];
