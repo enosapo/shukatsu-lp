@@ -1,8 +1,15 @@
 # saitan LP — Status & Handoff
 
-**最終更新**: 2026-05-11 09:05
-**ステータス**: ✅ **PC/SP レイアウトほぼ完成**（Figma 構造準拠、本番デプロイ未実施）
+**最終更新**: 2026-05-11 12:05
+**ステータス**: ✅ **Vercel 本番反映完了** — `https://shukatsu.enosapo.com/saitan/` で稼働中
 **次セッションでの読み方**: このファイルだけ読めば現状把握できるよう自己完結的に記述。
+
+> ⚠️ **2026-05-11 大幅刷新**: Xserver/PHP 方式から **Vercel + Edge Function** に完全移行。本ファイル下部の「Xserver 時代の本番デプロイ手順」は historical reference として残置。現在の運用は `~/.company/marketing/shukatsu/lp/README.md` 参照。
+>
+> - GitHub: `enosapo/shukatsu-lp`
+> - Vercel project: `shukatsu-lp` (Custom Domain: `shukatsu.enosapo.com`, DNS: Cloudflare CNAME → vercel-dns-016)
+> - Edge Function: `marketing/shukatsu/lp/api/submit.ts` (旧 `submit.php` の TS 移植)
+> - 詳細経緯: `~/.company/secretary/notes/2026-05-11-decisions.md`
 
 ---
 
