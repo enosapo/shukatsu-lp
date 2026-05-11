@@ -1,0 +1,9 @@
+{
+  "name": "shukatsu-lp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EnoVance shukatsu (新卒事業部) LP 群 - Vercel Edge Functions + 静的 LP",
+  "engines": {
+    "node": ">=20"
+  }
+}

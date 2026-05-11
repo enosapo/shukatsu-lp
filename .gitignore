@@ -1,0 +1,27 @@
+# Node
+node_modules/
+*.log
+
+# Vercel
+.vercel/
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# 旧 LP (Xserver 残置、Vercel デプロイ対象外)
+/standard-a/
+/standard-b/
+/standard-c/
+
+# saitan の Xserver 時代の遺物 (Vercel では api/submit.ts が代替)
+/saitan/submit.php
+/saitan/.htaccess

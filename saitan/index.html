@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>就活サポートを受ける｜エノサポ就活</title>
+  <meta name="description" content="エノサポ就活は就活生専門のキャリアサポートサービス。完全無料・最短当日に専任アドバイザーからご連絡。30秒の登録で内定獲得まで伴走します。">
+  <meta name="format-detection" content="telephone=no">
+  <meta property="og:title" content="就活サポートを受ける｜エノサポ就活">
+  <meta property="og:description" content="完全無料・最短当日に専任アドバイザーからご連絡。30秒の登録で内定獲得まで伴走します。">
+  <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      font-feature-settings: 'palt' 1;
+      color: #333;
+      background: #f3f3f3;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    img, svg { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    input, select, textarea { font-family: inherit; font-size: 16px; }
+
+    .lp {
+      max-width: 390px;
+      margin: 0 auto;
+      background: #fff;
+      /* iOS Safari の URL バー表示/非表示で 100vh が大きく出すぎ footer がブラウザ chrome の下に隠れるバグ対策。
+         100vh = fallback (古い browser) → 100dvh = dynamic viewport (Safari 15.4+/Chrome 108+) で動的に正しい高さ */
+      min-height: 100vh;
+      min-height: 100dvh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ========== Header ========== */
+    .header {
+      height: 44px;
+      padding: 0 62px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: #fff;
+      position: relative;
+      z-index: 10;
+      white-space: nowrap;  /* Figma React: whitespace-nowrap on header — prevents tagline wrap */
+    }
+    .header__logo {
+      font-weight: 900;
+      font-size: 26px;
+      line-height: 1.4;
+      display: flex;
+      gap: 2px;
+      font-feature-settings: 'vpal' 1, 'palt' 1;
+      flex-shrink: 0;
+    }
+    .header__logo .accent { color: #d22d26; }
+    .header__tagline {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-left: auto;
+      text-align: left;
+      color: #333;
+      flex-shrink: 0;  /* Don't shrink below intrinsic content width */
+    }
+    .header__tagline p { color: #333; }
+    .header__tagline p.accent { color: #d22d26; }
+
+    /* ========== MV (Hero) — Figma sp_step1 (390x500 baseline) ========== */
+    .mv {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .mv__bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/hero-bg.jpg');
+      background-size: 175.73% 105.98%;
+      /* CSS bg-position % uses (container - image) formula, not image-left%. Converted from Figma left:-51.62%, top:-5.88% */
+      background-position: 68.17% 98.33%;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+    .mv__bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      /* Lighter gradient so photo texture remains visible behind heading area (Figma SP shows subtle bg) */
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.55) 0%,
+        rgba(255,255,255,0.35) 25%,
+        rgba(255,255,255,0.1) 45%,
+        rgba(255,255,255,0) 55%);
+    }
+    .mv__inner {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+    .mv__heading {
+      position: absolute;
+      top: 5.4%;        /* 27px / 500 */
+      left: 6.15%;      /* 24px / 390 */
+      right: 6.15%;
+      font-weight: 700;
+      font-size: 50px;
+      line-height: 1.4;
+      color: #d22d26;
+      text-align: center;
+      letter-spacing: 0;
+      font-feature-settings: 'vpal' 1, 'palt' 1;
+      white-space: nowrap;
+    }
+    .mv__heading .black { color: #333; }
+    .mv__sub {
+      position: absolute;
+      top: 19.6%;       /* 98px / 500 */
+      left: 6.15%;
+      right: 6.15%;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+      text-align: center;
+      font-feature-settings: 'palt' 1;
+    }
+    .br-pc { display: none; }
+    .br-sp { display: inline; }
+    .mv__ribbon {
+      position: absolute;
+      top: 36.8%;       /* 184px / 500 */
+      left: 0;          /* full bleed left */
+      right: 5.9%;      /* 23px from right */
+      width: auto;
+      max-width: none;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.6;
+      background: #333;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
+      padding: 0 24px 0 16px;
+    }
+    .mv__photo-spacer { display: none; }
+    .mv__laurels {
+      position: absolute;
+      top: 48%;         /* 240px / 500 */
+      left: 6.15%;
+      right: 6.15%;
+      width: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0;
+      padding: 0;
+    }
+    .laurel {
+      position: relative;
+      width: 107px;
+      height: 63px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .laurel__svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .laurel__text {
+      display: none;
+    }
+
+    /* ========== Board ========== */
+    .board__title {
+      position: relative;
+      background: linear-gradient(122.45deg, #d22d26 51.679%, #b0241e 51.679%);
+      color: #fff;
+      text-align: center;
+      padding: 25px 24px 16px;  /* Figma SP: visible red box 104px tall (h2 33.6 + gap 4 + p 25.6 + pad 25+16 ≈ 104) */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 0;
+    }
+    .board__bubble {
+      position: absolute;
+      top: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 202px;
+      height: 40px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .board__bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #fff;
+    }
+    .board__bubble-free {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 26px;
+      padding: 0 8px;
+      background: linear-gradient(143.93deg, #371d0f 25.287%, #dec06b 49.323%, #371d0f 74.142%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .board__bubble-text {
+      color: #333;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+    .board__title h2 {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 1.4;
+      color: #fff;
+    }
+    .board__title p {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .board__contents {
+      background: #fff;
+      box-shadow: 0 16px 64px rgba(51,51,51,0.08);
+      padding: 24px 24px 48px;
+    }
+
+    /* ========== Wizard / Steps ========== */
+    .step { display: none; border: none; }
+    .step.active {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .progress__label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .progress__label .name {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.2;
+      color: #d22d26;
+    }
+    .progress__label .count {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.2;
+      color: #333;
+    }
+    .progress__bar {
+      width: 100%;
+      height: 8px;
+      background: #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress__fill {
+      height: 100%;
+      background: #d22d26;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .question {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #333;
+    }
+    .question .accent { color: #d22d26; }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .choice-btn {
+      width: 100%;
+      min-height: 56px;
+      padding: 16px 24px;
+      background: #333;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.4;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(51,51,51,0.4);
+      text-align: left;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+    }
+    .choice-btn:hover { transform: translateY(-1px); }
+    .choice-btn:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(51,51,51,0.4); }
+    .choice-btn.selected {
+      background: #d22d26;
+      box-shadow: 0 4px 8px rgba(210,45,38,0.4);
+    }
+
+    .step__title-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lock {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #333;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+    .lock svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-label {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.2;
+      color: #333;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      padding: 0 6px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 1.2;
+    }
+    .badge.required { background: #d22d26; }
+    .badge.optional { background: #333; }
+
+    .input, .select {
+      width: 100%;
+      height: 56px;
+      padding: 16px 20px;
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 16px;
+      font-size: 16px;
+      line-height: 1.4;
+      color: #333;
+      font-weight: 400;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    .input::placeholder {
+      color: #999;
+    }
+    .input:focus, .select:focus {
+      border-color: #d22d26;
+    }
+    .input.error, .select.error {
+      border-color: #d22d26;
+      background: #fff5f5;
+    }
+    .select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      padding-right: 48px;
+    }
+
+    .error-msg {
+      color: #d22d26;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+
+    .terms {
+      text-align: center;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .terms a .accent {
+      color: #d22d26;
+      text-decoration: underline;
+    }
+
+    .cta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 12px 16px;
+      background: #d22d26;
+      border-radius: 16px;
+      box-shadow: 0 4px 8px rgba(210,45,38,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .btn-submit:hover { transform: translateY(-1px); }
+    .btn-submit:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(210,45,38,0.4); }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .btn-submit__inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-submit__free {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(142.74deg, #371d0f 21.679%, #dec06b 48.623%, #371d0f 76.445%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .btn-submit__text {
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+      text-align: left;
+      gap: 2px;
+    }
+    .btn-submit__text .small {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+    .btn-submit__text .big {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+    .btn-submit__arrow {
+      color: #fff;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .cta-sub {
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #333;
+      font-weight: 400;
+    }
+
+    .controler {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-back, .btn-next {
+      height: 48px;
+      padding: 12px 20px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.4;
+      transition: transform 0.1s ease;
+    }
+    .btn-back {
+      width: 80px;
+      background: #ddd;
+      color: #333;
+      flex-shrink: 0;
+    }
+    .btn-next {
+      flex: 1;
+      background: #d22d26;
+      border: 1px solid #d22d26;
+      color: #fff;
+      box-shadow: 0 4px 8px rgba(210,45,38,0.4);
+    }
+    .btn-back:active, .btn-next:active { transform: translateY(1px); }
+    .btn-next:disabled {
+      background: #f3a4a1;
+      border-color: #f3a4a1;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* ========== Footer (Figma SP: 390x227, py-64, gap-16) ========== */
+    .footer {
+      background: #fff;
+      padding: 64px 24px;
+      /* iPhone home indicator / Safari ツールバー 領域分の余裕を確保 (footer 末尾が chrome 下に隠れないように) */
+      padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .footer__logo {
+      font-weight: 900;
+      font-size: 20px;
+      line-height: 1.4;
+      display: flex;
+      gap: 2px;
+      font-feature-settings: 'vpal' 1, 'palt' 1;
+    }
+    .footer__logo .accent { color: #d22d26; }
+    .footer__nav {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      text-align: center;
+    }
+    .footer__copy {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #333;
+      text-align: center;
+    }
+
+    /* ========== PC (≥768px) — values from Figma pc_step1 (1440 baseline) ========== */
+    @media (min-width: 768px) {
+      /* Body は中性グレー背景。1920+ モニターで LP (max 1440) が中央寄せされ両脇に余白が出る雑誌レイアウト風 */
+      body { background: #f3f3f3; }
+      .lp {
+        max-width: 1440px;
+        margin: 0 auto;
+        background: #fff;
+        overflow-x: hidden;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.06);  /* LP の境界を控えめに示す */
+      }
+
+      /* Header: 64px tall, horizontal padding 140px (matches MV padding-left) */
+      .header {
+        max-width: 1440px;
+        margin: 0 auto;
+        height: 64px;
+        padding: 0 clamp(40px, 9.72vw, 140px);
+        background: #fff;
+        position: relative;
+        z-index: 20;
+      }
+      .header__logo {
+        font-size: clamp(20px, 1.81vw, 26px);
+        font-weight: 900;
+      }
+      .header__logo > * { line-height: 1.4; }
+      .header__tagline {
+        font-size: clamp(13px, 1.11vw, 16px);
+        font-weight: 700;
+        line-height: 1.2;
+        text-align: right;
+        color: #333;
+      }
+      .header__tagline p { display: inline; color: #333; }
+      .header__tagline p.accent { color: #d22d26; }
+
+      /* MV: full-bleed background, anchored left-bottom (Figma: 118.75% auto, 0 -143.46%) */
+      .mv {
+        position: relative;
+        width: 100%;
+        height: clamp(420px, 37.7vw, 543px);
+        overflow: hidden;
+        background: #fff;
+      }
+      .mv__bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('assets/hero-bg.jpg');
+        background-size: 118.75% 243.49%;
+        background-position: left bottom;
+        background-repeat: no-repeat;
+      }
+      .mv__bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right,
+          rgba(255,255,255,0.85) 0%,
+          rgba(255,255,255,0.55) 30%,
+          rgba(255,255,255,0.15) 48%,
+          rgba(255,255,255,0) 60%);
+      }
+      .mv__inner {
+        position: relative;
+        inset: auto;
+        z-index: 1;
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: clamp(55px, 5.21vw, 75px) 40px 0 clamp(100px, 9.72vw, 140px);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start !important;
+        text-align: left !important;
+        gap: 0;
+      }
+      .mv__heading {
+        position: static;
+        top: auto; left: auto; right: auto;
+        font-size: clamp(60px, 5.69vw, 82px);
+        line-height: 1.2;
+        text-align: left !important;
+        letter-spacing: 0;
+        align-self: flex-start;
+        max-width: none;
+        white-space: nowrap;
+        margin: 0;
+      }
+      .mv__sub {
+        position: static;
+        top: auto; left: auto; right: auto;
+        font-size: clamp(15px, 1.39vw, 20px);
+        line-height: 1.6;
+        text-align: left !important;
+        align-self: flex-start;
+        max-width: none;
+        font-weight: 700;
+        color: #333;
+        margin-top: 8px;
+      }
+      .br-pc { display: inline; }
+      .br-sp { display: none; }
+      .mv__ribbon {
+        position: static;
+        top: auto; left: auto; right: auto;
+        width: clamp(420px, 38.06vw, 548px);
+        max-width: none;
+        height: clamp(48px, 3.89vw, 56px);
+        font-size: clamp(16px, 1.39vw, 20px);
+        font-weight: 700;
+        background: #333;
+        /* Right-pointing arrow tail */
+        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+        padding: 0 32px 0 20px;
+        justify-content: flex-start;
+        align-self: flex-start;
+        margin-top: 16px;
+      }
+      .mv__photo-spacer { display: none; }
+      .mv__laurels {
+        position: static;
+        top: auto; left: auto; right: auto;
+        width: 100%;
+        max-width: clamp(380px, 34.72vw, 500px);
+        justify-content: space-between;
+        gap: 0;
+        padding: 0;
+        align-self: flex-start;
+        margin-top: 16px;
+      }
+      .laurel {
+        width: clamp(120px, 10.83vw, 156px);
+        height: clamp(72px, 6.42vw, 92.5px);
+      }
+
+      /* Board: 960 wide, centered, overlaps hero by 46px */
+      .board {
+        position: relative;
+        z-index: 5;
+        background: transparent;
+        padding: 0;
+        max-width: clamp(720px, 66.67vw, 960px);
+        margin: clamp(-46px, -3.19vw, -28px) auto 40px;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+      }
+      .board__title {
+        max-width: none;
+        margin: 0;
+        padding: 35px 24px 16px;
+        gap: 3px;
+      }
+      .board__bubble {
+        top: -28px;
+        width: 232px;
+        height: 60px;
+      }
+      .board__bubble::after {
+        bottom: -14px;
+        border-left-width: 14px;
+        border-right-width: 14px;
+        border-top-width: 14px;
+      }
+      .board__bubble-free {
+        width: auto;  /* SP の固定 72px を解除して PC では content-stretch（Figma PC は内容に応じた幅） */
+        font-size: 16px;
+        height: 30px;
+        padding: 0 8px;
+        line-height: 1.2;
+      }
+      .board__bubble-text {
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      .board__title h2 {
+        font-size: clamp(24px, 2.22vw, 32px);
+        line-height: 1.4;
+      }
+      .board__title p {
+        font-size: clamp(13px, 1.11vw, 16px);
+        line-height: 1.6;
+      }
+      .board__contents {
+        max-width: none;
+        margin: 0;
+        padding: 24px 40px 64px;
+        box-shadow: none;
+      }
+      /* Form interior: 360px centered (Figma: Container x=300, w=360 inside Board 960) */
+      .board__contents > form {
+        max-width: 360px;
+        margin: 0 auto;
+      }
+
+      .choice-btn { font-size: 16px; }
+      .input, .select { font-size: 15px; }
+      .btn-submit { padding: 16px 20px; }
+      .btn-submit__free { width: 56px; height: 56px; }
+      .btn-submit__text .big { font-size: 18px; }
+
+      /* Footer */
+      .footer {
+        max-width: 1440px;
+        margin: 0 auto;
+        background: #fff;
+        padding: clamp(40px, 5vw, 64px) 40px 40px;
+      }
+      .footer__logo { font-size: 22px; }
+      .footer__nav { font-size: 14px; }
+    }
+
+    /* Narrow tablets: heading wraps if needed */
+    @media (min-width: 768px) and (max-width: 880px) {
+      .mv__heading { white-space: normal; font-size: 44px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="lp">
+  <header class="header">
+    <div class="header__logo"><span>エノサポ</span><span class="accent">就活</span></div>
+    <div class="header__tagline">
+      <p class="accent">就活生専門</p>
+      <p>キャリアサポートサービス</p>
+    </div>
+  </header>
+
+  <section class="mv">
+    <div class="mv__bg" role="presentation"></div>
+    <div class="mv__inner">
+      <h1 class="mv__heading"><span>内定</span><span class="black">を、</span><span>最短</span><span class="black">で。</span></h1>
+      <p class="mv__sub">企業ごとに最適化した面接対策や<br class="br-sp">エノサポ就活独自の<br class="br-pc">選考ルートのご紹介で、<br class="br-sp">最短で内定獲得が可能</p>
+      <div class="mv__ribbon">最短当日中に専任アドバイザーからご連絡</div>
+      <div class="mv__photo-spacer" aria-hidden="true"></div>
+      <div class="mv__laurels">
+        <div class="laurel">
+          <img class="laurel__svg" src="assets/laurel-01.svg" alt="">
+          <div class="laurel__text">
+            <span class="label">平均</span>
+            <span class="number">21<span class="unit">日</span></span>
+            <span class="caption">で内定</span>
+          </div>
+        </div>
+        <div class="laurel">
+          <img class="laurel__svg" src="assets/laurel-02.svg" alt="">
+          <div class="laurel__text">
+            <span class="label">累計サポート</span>
+            <span class="number">3,200<span class="unit">名</span></span>
+            <span class="caption">以上</span>
+          </div>
+        </div>
+        <div class="laurel">
+          <img class="laurel__svg" src="assets/laurel-03.svg" alt="">
+          <div class="laurel__text">
+            <span class="label">内定獲得率</span>
+            <span class="number">91<span class="unit">%</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board">
+    <header class="board__title">
+      <div class="board__bubble" aria-hidden="true">
+        <span class="board__bubble-free">完全無料</span>
+        <span class="board__bubble-text">30秒で完了</span>
+      </div>
+      <h2>就活サポートを受ける</h2>
+      <p>あなたに合った就活プランをご提案します。</p>
+    </header>
+
+    <div class="board__contents">
+      <form id="wizard" novalidate autocomplete="on">
+
+        <fieldset class="step active" data-step="1">
+          <div class="progress">
+            <div class="progress__label"><span class="name">Step1</span><span class="count">1/4</span></div>
+            <div class="progress__bar"><div class="progress__fill" style="width: 24.85%"></div></div>
+          </div>
+          <h3 class="question"><span class="accent">現在のお気持ち</span>に近いのはどちらですか</h3>
+          <div class="choices">
+            <button type="button" class="choice-btn" data-field="feeling" data-value="今すぐ企業を紹介してほしい">今すぐ企業を紹介してほしい</button>
+            <button type="button" class="choice-btn" data-field="feeling" data-value="まずは相談してみたい">まずは相談してみたい</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="step" data-step="2">
+          <div class="progress">
+            <div class="progress__label"><span class="name">Step2</span><span class="count">2/4</span></div>
+            <div class="progress__bar"><div class="progress__fill" style="width: 49.71%"></div></div>
+          </div>
+          <h3 class="question"><span class="accent">現在の状況</span>を教えてください</h3>
+          <div class="choices">
+            <button type="button" class="choice-btn" data-field="status" data-value="大学3年生">大学3年生</button>
+            <button type="button" class="choice-btn" data-field="status" data-value="大学4年生">大学4年生</button>
+            <button type="button" class="choice-btn" data-field="status" data-value="大学院生">大学院生</button>
+            <button type="button" class="choice-btn" data-field="status" data-value="短大生・専門生">短大生・専門生</button>
+            <button type="button" class="choice-btn" data-field="status" data-value="既卒・第二新卒">既卒・第二新卒</button>
+            <button type="button" class="choice-btn" data-field="status" data-value="その他">その他</button>
+          </div>
+          <div class="controler">
+            <button type="button" class="btn-back">戻る</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="step" data-step="3">
+          <div class="progress">
+            <div class="progress__label"><span class="name">Step3</span><span class="count">3/4</span></div>
+            <div class="progress__bar"><div class="progress__fill" style="width: 74.56%"></div></div>
+          </div>
+          <h3 class="question"><span class="accent">希望する勤務エリア</span>を教えてください</h3>
+          <select id="prefecture" class="select" name="prefecture">
+            <option value="">都道府県を選択する</option>
+            <option>北海道</option><option>青森県</option><option>岩手県</option><option>宮城県</option>
+            <option>秋田県</option><option>山形県</option><option>福島県</option><option>茨城県</option>
+            <option>栃木県</option><option>群馬県</option><option>埼玉県</option><option>千葉県</option>
+            <option>東京都</option><option>神奈川県</option><option>新潟県</option><option>富山県</option>
+            <option>石川県</option><option>福井県</option><option>山梨県</option><option>長野県</option>
+            <option>岐阜県</option><option>静岡県</option><option>愛知県</option><option>三重県</option>
+            <option>滋賀県</option><option>京都府</option><option>大阪府</option><option>兵庫県</option>
+            <option>奈良県</option><option>和歌山県</option><option>鳥取県</option><option>島根県</option>
+            <option>岡山県</option><option>広島県</option><option>山口県</option><option>徳島県</option>
+            <option>香川県</option><option>愛媛県</option><option>高知県</option><option>福岡県</option>
+            <option>佐賀県</option><option>長崎県</option><option>熊本県</option><option>大分県</option>
+            <option>宮崎県</option><option>鹿児島県</option><option>沖縄県</option>
+            <option value="未定">未定・どこでも可</option>
+          </select>
+          <div class="controler">
+            <button type="button" class="btn-back">戻る</button>
+            <button type="button" class="btn-next" id="step3-next" disabled>次へ</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="step" data-step="4">
+          <div class="progress">
+            <div class="progress__label"><span class="name">Step4</span><span class="count">4/4</span></div>
+            <div class="progress__bar"><div class="progress__fill" style="width: 100%"></div></div>
+          </div>
+          <div class="step__title-row">
+            <h3 class="question"><span class="accent">お名前・連絡先</span>を教えてください</h3>
+            <p class="lock">
+              <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M5 8V5.5C5 3.567 6.567 2 8.5 2H9.5C11.433 2 13 3.567 13 5.5V8M3.5 8H14.5C14.776 8 15 8.224 15 8.5V15.5C15 15.776 14.776 16 14.5 16H3.5C3.224 16 3 15.776 3 15.5V8.5C3 8.224 3.224 8 3.5 8Z" stroke="#333" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              個人情報は公開されません
+            </p>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label"><span class="badge required">必須</span><span>お名前</span></div>
+            <input type="text" id="name" class="input" placeholder="例) 山田 太郎" autocomplete="name" required>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label"><span class="badge required">必須</span><span>携帯番号</span></div>
+            <input type="tel" id="phone" class="input" placeholder="例) 09012345678 (ハイフンなし)" autocomplete="tel" inputmode="numeric" maxlength="13" required>
+          </div>
+
+          <div class="input-group">
+            <div class="input-label"><span class="badge optional">任意</span><span>メールアドレス</span></div>
+            <input type="email" id="email" class="input" placeholder="例) example@mail.com" autocomplete="email">
+          </div>
+
+          <p class="terms"><a href="https://enovance.co.jp/terms" target="_blank" rel="noopener"><span class="accent">利用規約</span>を確認する</a></p>
+
+          <div class="cta">
+            <button type="button" class="btn-submit" id="submit-btn">
+              <span class="btn-submit__inner">
+                <span class="btn-submit__free">完全<br>無料</span>
+                <span class="btn-submit__text">
+                  <span class="small">利用規約に同意して</span>
+                  <span class="big">就活サポートをはじめる</span>
+                </span>
+              </span>
+              <svg class="btn-submit__arrow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <polyline points="9 6 15 12 9 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <p class="cta-sub">最短当日中に専任アドバイザーからご連絡します。<br>すぐにご相談いただけます。</p>
+          </div>
+
+          <div class="controler">
+            <button type="button" class="btn-back">戻る</button>
+          </div>
+        </fieldset>
+
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__logo"><span>エノサポ</span><span class="accent">就活</span></div>
+    <p class="footer__nav">プライバシーポリシー ／ 利用規約 ／ 会社概要</p>
+    <p class="footer__copy">© 株式会社エノバンス</p>
+  </footer>
+</div>
+
+<script>
+  // ===== ▼ 安全な送信パターン（このセクションは触らない） =====
+  const LP_SOURCE = 'saitan';
+  const APPLICATION_ID_PREFIX = 'SJ';
+  // ===== ▲ ここまで触らない =====
+
+  const formData = { feeling: '', status: '', prefecture: '', name: '', phone: '', email: '' };
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  const steps = document.querySelectorAll('.step');
+  const showStep = (n) => {
+    steps.forEach(s => s.classList.toggle('active', Number(s.dataset.step) === n));
+    currentStep = n;
+    const board = document.querySelector('.board__title');
+    if (board) board.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const field = btn.dataset.field;
+      const value = btn.dataset.value;
+      formData[field] = value;
+      btn.parentElement.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      setTimeout(() => {
+        if (currentStep < totalSteps) showStep(currentStep + 1);
+      }, 200);
+    });
+  });
+
+  const prefSelect = document.getElementById('prefecture');
+  const step3Next = document.getElementById('step3-next');
+  prefSelect.addEventListener('change', () => {
+    formData.prefecture = prefSelect.value;
+    step3Next.disabled = !prefSelect.value;
+  });
+  step3Next.addEventListener('click', () => {
+    if (!formData.prefecture) return;
+    showStep(4);
+  });
+
+  document.querySelectorAll('.btn-back').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (currentStep > 1) showStep(currentStep - 1);
+    });
+  });
+
+  function normalizePhone(raw) {
+    if (!raw) return '';
+    return raw
+      .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+      .replace(/[^\d]/g, '');
+  }
+
+  function showError(input, msg) {
+    input.classList.add('error');
+    let next = input.nextElementSibling;
+    if (!next || !next.classList.contains('error-msg')) {
+      next = document.createElement('p');
+      next.className = 'error-msg';
+      input.parentNode.appendChild(next);
+    }
+    next.textContent = msg;
+  }
+  function clearError(input) {
+    input.classList.remove('error');
+    const next = input.nextElementSibling;
+    if (next && next.classList.contains('error-msg')) next.remove();
+  }
+
+  ['name', 'phone', 'email'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => clearError(el));
+  });
+
+  const submitBtn = document.getElementById('submit-btn');
+  submitBtn.addEventListener('click', async () => {
+    const nameEl = document.getElementById('name');
+    const phoneEl = document.getElementById('phone');
+    const emailEl = document.getElementById('email');
+
+    const name = (nameEl.value || '').trim();
+    const phoneRaw = (phoneEl.value || '').trim();
+    const phone = normalizePhone(phoneRaw);
+    const email = (emailEl.value || '').trim();
+
+    let hasError = false;
+    if (!name) { showError(nameEl, 'お名前を入力してください'); hasError = true; }
+    if (!phone) { showError(phoneEl, '携帯番号を入力してください'); hasError = true; }
+    else if (phone.length < 10 || phone.length > 11) { showError(phoneEl, 'ハイフンなしの携帯番号（10〜11桁）を入力してください'); hasError = true; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError(emailEl, 'メールアドレスの形式が正しくありません'); hasError = true; }
+    if (hasError) return;
+
+    formData.name = name;
+    formData.phone = phone;
+    formData.email = email;
+
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const dateStr = now.getFullYear().toString() + pad(now.getMonth() + 1) + pad(now.getDate());
+    const timeStr = pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
+    const applicationId = APPLICATION_ID_PREFIX + '-' + dateStr + '-' + timeStr;
+
+    const payload = {
+      source:        LP_SOURCE,
+      name:          formData.name,
+      phone:         formData.phone,
+      email:         formData.email,
+      prefecture:    formData.prefecture,
+      feeling:       formData.feeling,
+      status:        formData.status,
+      applicationId: applicationId,
+    };
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'form_submit', transaction_id: applicationId, lp_name: LP_SOURCE });
+
+    submitBtn.disabled = true;
+    const bigText = submitBtn.querySelector('.btn-submit__text .big');
+    if (bigText) bigText.textContent = '送信中...';
+
+    try {
+      await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.error('送信エラー:', err);
+    }
+
+    const thanksUrl = 'thanks.html?oid=' + encodeURIComponent(applicationId)
+      + (formData.name ? '&name=' + encodeURIComponent(formData.name) : '');
+    window.location.href = thanksUrl;
+  });
+</script>
+
+</body>
+</html>

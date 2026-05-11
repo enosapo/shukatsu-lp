@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ご登録ありがとうございます｜エノサポ就活</title>
+  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      font-feature-settings: 'palt' 1;
+      color: #333;
+      background: #f3f3f3;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    img, svg { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .lp {
+      max-width: 390px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100vh;
+      min-height: 100dvh;  /* iOS Safari URL バー対策: footer 隠れ防止 */
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ========== Header ========== */
+    .header {
+      height: 44px;
+      padding: 0 62px 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: #fff;
+      position: relative;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    .header__logo {
+      font-weight: 900;
+      font-size: 26px;
+      line-height: 1.4;
+      display: flex;
+      gap: 2px;
+      font-feature-settings: 'vpal' 1, 'palt' 1;
+      flex-shrink: 0;
+    }
+    .header__logo .accent { color: #d22d26; }
+    .header__tagline {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-left: auto;
+      text-align: left;
+      color: #333;
+      flex-shrink: 0;
+    }
+    .header__tagline p { color: #333; }
+    .header__tagline p.accent { color: #d22d26; }
+
+    /* ========== MV (Hero) — Figma sp_step1 (390x500 baseline) ========== */
+    .mv {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .mv__bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/hero-bg.jpg');
+      background-size: 175.73% 105.98%;
+      background-position: 68.17% 98.33%;
+      background-repeat: no-repeat;
+      z-index: 0;
+    }
+    .mv__bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.55) 0%,
+        rgba(255,255,255,0.35) 25%,
+        rgba(255,255,255,0.1) 45%,
+        rgba(255,255,255,0) 55%);
+    }
+    .mv__inner {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+    .mv__heading {
+      position: absolute;
+      top: 5.4%;
+      left: 6.15%;
+      right: 6.15%;
+      font-weight: 700;
+      font-size: 50px;
+      line-height: 1.4;
+      color: #d22d26;
+      text-align: center;
+      letter-spacing: 0;
+      font-feature-settings: 'vpal' 1, 'palt' 1;
+      white-space: nowrap;
+    }
+    .mv__heading .black { color: #333; }
+    .mv__sub {
+      position: absolute;
+      top: 19.6%;
+      left: 6.15%;
+      right: 6.15%;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+      text-align: center;
+      font-feature-settings: 'palt' 1;
+    }
+    .br-pc { display: none; }
+    .br-sp { display: inline; }
+    .mv__ribbon {
+      position: absolute;
+      top: 36.8%;
+      left: 0;
+      right: 5.9%;
+      width: auto;
+      max-width: none;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.6;
+      background: #333;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
+      padding: 0 24px 0 16px;
+    }
+    .mv__photo-spacer { display: none; }
+    .mv__laurels {
+      position: absolute;
+      top: 48%;
+      left: 6.15%;
+      right: 6.15%;
+      width: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0;
+      padding: 0;
+    }
+    .laurel {
+      position: relative;
+      width: 107px;
+      height: 63px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .laurel__svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .laurel__text { display: none; }
+
+    /* ========== Board ========== */
+    .board__title {
+      position: relative;
+      background: linear-gradient(122.45deg, #d22d26 51.679%, #b0241e 51.679%);
+      color: #fff;
+      text-align: center;
+      padding: 25px 24px 16px;  /* Figma SP: visible red box 104px tall */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 0;
+    }
+    .board__bubble {
+      position: absolute;
+      top: -26px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 202px;
+      height: 40px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .board__bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid #fff;
+    }
+    .board__bubble-free {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 26px;
+      padding: 0 8px;
+      background: linear-gradient(143.93deg, #371d0f 25.287%, #dec06b 49.323%, #371d0f 74.142%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .board__bubble-text {
+      color: #333;
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+    .board__title h2 {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 1.4;
+      color: #fff;
+    }
+    .board__title p {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .board__contents {
+      background: #fff;
+      box-shadow: 0 16px 64px rgba(51,51,51,0.08);
+      padding: 40px 24px 48px;
+    }
+
+    /* ========== Thanks contents ========== */
+    .thanks-container {
+      max-width: 360px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .thanks-title {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 1.4;
+      color: #333;
+    }
+    .thanks-name { color: #d22d26; }
+    .thanks-body {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .thanks-body p {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+    }
+    .thanks-id {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #999;
+    }
+    .btn-back-top {
+      width: 100%;
+      height: 48px;
+      padding: 12px 20px;
+      background: #ddd;
+      color: #333;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1.4;
+      border-radius: 16px;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s ease, background 0.15s ease;
+    }
+    .btn-back-top:hover { background: #ccc; }
+    .btn-back-top:active { transform: translateY(1px); }
+
+    /* ========== Footer (Figma SP: 390x227, py-64, gap-16) ========== */
+    .footer {
+      background: #fff;
+      padding: 64px 24px;
+      padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .footer__logo {
+      font-weight: 900;
+      font-size: 20px;
+      line-height: 1.4;
+      display: flex;
+      gap: 2px;
+      font-feature-settings: 'vpal' 1, 'palt' 1;
+    }
+    .footer__logo .accent { color: #d22d26; }
+    .footer__nav {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      text-align: center;
+    }
+    .footer__copy {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #333;
+      text-align: center;
+    }
+
+    /* ========== PC (≥768px) — values from Figma pc_thanks (1440 baseline) ========== */
+    @media (min-width: 768px) {
+      body { background: #f3f3f3; }
+      .lp {
+        max-width: 1440px;
+        margin: 0 auto;
+        background: #fff;
+        overflow-x: hidden;
+        box-shadow: 0 0 24px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Header: 64px tall, horizontal padding 140px */
+      .header {
+        max-width: 1440px;
+        margin: 0 auto;
+        height: 64px;
+        padding: 0 clamp(40px, 9.72vw, 140px);
+        background: #fff;
+        position: relative;
+        z-index: 20;
+      }
+      .header__logo {
+        font-size: clamp(20px, 1.81vw, 26px);
+        font-weight: 900;
+      }
+      .header__logo > * { line-height: 1.4; }
+      .header__tagline {
+        font-size: clamp(13px, 1.11vw, 16px);
+        font-weight: 700;
+        line-height: 1.2;
+        text-align: right;
+        color: #333;
+      }
+      .header__tagline p { display: inline; color: #333; }
+      .header__tagline p.accent { color: #d22d26; }
+
+      /* MV: same as index.html (Figma React: width 118.75%, height 243.49%, top -143.46%, left 0) */
+      .mv {
+        position: relative;
+        width: 100%;
+        height: clamp(420px, 37.7vw, 543px);
+        overflow: hidden;
+        background: #fff;
+      }
+      .mv__bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('assets/hero-bg.jpg');
+        background-size: 118.75% 243.49%;
+        background-position: left bottom;
+        background-repeat: no-repeat;
+      }
+      .mv__bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right,
+          rgba(255,255,255,0.85) 0%,
+          rgba(255,255,255,0.55) 30%,
+          rgba(255,255,255,0.15) 48%,
+          rgba(255,255,255,0) 60%);
+      }
+      .mv__inner {
+        position: relative;
+        inset: auto;
+        z-index: 1;
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: clamp(55px, 5.21vw, 75px) 40px 0 clamp(100px, 9.72vw, 140px);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start !important;
+        text-align: left !important;
+        gap: 0;
+      }
+      .mv__heading {
+        position: static;
+        top: auto; left: auto; right: auto;
+        font-size: clamp(60px, 5.69vw, 82px);
+        line-height: 1.2;
+        text-align: left !important;
+        letter-spacing: 0;
+        align-self: flex-start;
+        max-width: none;
+        white-space: nowrap;
+        margin: 0;
+      }
+      .mv__sub {
+        position: static;
+        top: auto; left: auto; right: auto;
+        font-size: clamp(15px, 1.39vw, 20px);
+        line-height: 1.6;
+        text-align: left !important;
+        align-self: flex-start;
+        max-width: none;
+        font-weight: 700;
+        color: #333;
+        margin-top: 8px;
+      }
+      .br-pc { display: inline; }
+      .br-sp { display: none; }
+      .mv__ribbon {
+        position: static;
+        top: auto; left: auto; right: auto;
+        width: clamp(420px, 38.06vw, 548px);
+        max-width: none;
+        height: clamp(48px, 3.89vw, 56px);
+        font-size: clamp(16px, 1.39vw, 20px);
+        font-weight: 700;
+        background: #333;
+        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+        padding: 0 32px 0 20px;
+        justify-content: flex-start;
+        align-self: flex-start;
+        margin-top: 16px;
+      }
+      .mv__photo-spacer { display: none; }
+      .mv__laurels {
+        position: static;
+        top: auto; left: auto; right: auto;
+        width: 100%;
+        max-width: clamp(380px, 34.72vw, 500px);
+        justify-content: space-between;
+        gap: 0;
+        padding: 0;
+        align-self: flex-start;
+        margin-top: 16px;
+      }
+      .laurel {
+        width: clamp(120px, 10.83vw, 156px);
+        height: clamp(72px, 6.42vw, 92.5px);
+      }
+
+      /* Board: 960 wide, centered, overlaps hero by 46px */
+      .board {
+        position: relative;
+        z-index: 5;
+        background: transparent;
+        padding: 0;
+        max-width: clamp(720px, 66.67vw, 960px);
+        margin: clamp(-46px, -3.19vw, -28px) auto 40px;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+      }
+      .board__title {
+        max-width: none;
+        margin: 0;
+        padding: 35px 24px 16px;
+        gap: 3px;
+      }
+      .board__bubble {
+        top: -28px;
+        width: 232px;
+        height: 60px;
+      }
+      .board__bubble::after {
+        bottom: -14px;
+        border-left-width: 14px;
+        border-right-width: 14px;
+        border-top-width: 14px;
+      }
+      .board__bubble-free {
+        width: auto;  /* SP の固定 72px を解除 */
+        font-size: 16px;
+        height: 30px;
+        padding: 0 8px;
+        line-height: 1.2;
+      }
+      .board__bubble-text {
+        font-size: 18px;
+        line-height: 1.6;
+      }
+      .board__title h2 {
+        font-size: clamp(24px, 2.22vw, 32px);
+        line-height: 1.4;
+      }
+      .board__title p {
+        font-size: clamp(13px, 1.11vw, 16px);
+        line-height: 1.6;
+      }
+
+      /* Board Contents: padding top 40 / bottom 64 / sides 40 (form max-width handles inner 360 centering) */
+      .board__contents {
+        max-width: none;
+        margin: 0;
+        padding: 40px 40px 64px;
+        box-shadow: none;
+      }
+      /* Thanks container: 360px centered (Figma: Container x=300, w=360 inside Board 960) */
+      .thanks-title {
+        font-size: 18px;
+        line-height: 1.4;
+      }
+      .thanks-body p {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      /* Footer */
+      .footer {
+        max-width: 1440px;
+        margin: 0 auto;
+        background: #fff;
+        padding: clamp(40px, 5vw, 64px) 40px 40px;
+      }
+      .footer__logo { font-size: 22px; }
+      .footer__nav { font-size: 14px; }
+    }
+
+    /* Narrow tablets: heading wraps if needed */
+    @media (min-width: 768px) and (max-width: 880px) {
+      .mv__heading { white-space: normal; font-size: 44px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="lp">
+  <header class="header">
+    <div class="header__logo"><span>エノサポ</span><span class="accent">就活</span></div>
+    <div class="header__tagline">
+      <p class="accent">就活生専門</p>
+      <p>キャリアサポートサービス</p>
+    </div>
+  </header>
+
+  <section class="mv">
+    <div class="mv__bg" role="presentation"></div>
+    <div class="mv__inner">
+      <h1 class="mv__heading"><span>内定</span><span class="black">を、</span><span>最短</span><span class="black">で。</span></h1>
+      <p class="mv__sub">企業ごとに最適化した面接対策や<br class="br-sp">エノサポ就活独自の<br class="br-pc">選考ルートのご紹介で、<br class="br-sp">最短で内定獲得が可能</p>
+      <div class="mv__ribbon">最短当日中に専任アドバイザーからご連絡</div>
+      <div class="mv__photo-spacer" aria-hidden="true"></div>
+      <div class="mv__laurels">
+        <div class="laurel">
+          <img class="laurel__svg" src="assets/laurel-01.svg" alt="">
+          <div class="laurel__text">
+            <span class="label">平均</span>
+            <span class="number">21<span class="unit">日</span></span>
+            <span class="caption">で内定</span>
+          </div>
+        </div>
+        <div class="laurel">
+          <img class="laurel__svg" src="assets/laurel-02.svg" alt="">
+          <div class="laurel__text">
+            <span class="label">累計サポート</span>
+            <span class="number">3,200<span class="unit">名</span></span>
+            <span class="caption">以上</span>
+          </div>
+        </div>
+        <div class="laurel">
+          <img class="laurel__svg" src="assets/laurel-03.svg" alt="">
+          <div class="laurel__text">
+            <span class="label">内定獲得率</span>
+            <span class="number">91<span class="unit">%</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="board">
+    <header class="board__title">
+      <div class="board__bubble" aria-hidden="true">
+        <span class="board__bubble-free">完全無料</span>
+        <span class="board__bubble-text">30秒で完了</span>
+      </div>
+      <h2>就活サポートを受ける</h2>
+      <p>あなたに合った就活プランをご提案します。</p>
+    </header>
+
+    <div class="board__contents">
+      <div class="thanks-container">
+        <h2 class="thanks-title" id="thanks-title">ご登録ありがとうございます。</h2>
+        <div class="thanks-body">
+          <p>エノサポ就活への無料会員登録が完了しました。</p>
+          <p>専任のキャリアアドバイザーが、あなたの情報を確認のうえ、最短当日にご連絡いたします。</p>
+          <p>登録いただいたお電話番号・メールアドレスにご連絡しますので、着信・受信設定をご確認ください。</p>
+        </div>
+        <p class="thanks-id" id="thanks-id"></p>
+        <a class="btn-back-top" href="https://enovance.co.jp/" rel="noopener">トップページへ戻る</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__logo"><span>エノサポ</span><span class="accent">就活</span></div>
+    <p class="footer__nav">プライバシーポリシー ／ 利用規約 ／ 会社概要</p>
+    <p class="footer__copy">© 株式会社エノバンス</p>
+  </footer>
+</div>
+
+<script>
+  try { sessionStorage.removeItem('pending_submission'); } catch (e) {}
+
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get('name');
+  const oid = params.get('oid') || '';
+
+  if (name) {
+    const titleEl = document.getElementById('thanks-title');
+    titleEl.innerHTML = '<span class="thanks-name">' + escapeHtml(name) + '</span>様、ご登録ありがとうございます。';
+  }
+  if (oid) {
+    document.getElementById('thanks-id').textContent = '受付番号: ' + oid;
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: 'cv_complete', transaction_id: oid });
+</script>
+
+</body>
+</html>
