@@ -947,8 +947,8 @@
           </div>
 
           <div class="input-group">
-            <div class="input-label"><span class="badge optional">任意</span><span>メールアドレス</span></div>
-            <input type="email" id="email" class="input" placeholder="例) example@mail.com" autocomplete="email">
+            <div class="input-label"><span class="badge required">必須</span><span>メールアドレス</span></div>
+            <input type="email" id="email" class="input" placeholder="例) example@mail.com" autocomplete="email" required>
           </div>
 
           <p class="terms"><a href="https://enovance.co.jp/terms" target="_blank" rel="noopener"><span class="accent">利用規約</span>を確認する</a></p>
@@ -1076,7 +1076,8 @@
     if (!name) { showError(nameEl, 'お名前を入力してください'); hasError = true; }
     if (!phone) { showError(phoneEl, '携帯番号を入力してください'); hasError = true; }
     else if (phone.length < 10 || phone.length > 11) { showError(phoneEl, 'ハイフンなしの携帯番号（10〜11桁）を入力してください'); hasError = true; }
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError(emailEl, 'メールアドレスの形式が正しくありません'); hasError = true; }
+    if (!email) { showError(emailEl, 'メールアドレスを入力してください'); hasError = true; }
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError(emailEl, 'メールアドレスの形式が正しくありません'); hasError = true; }
     if (hasError) return;
 
     formData.name = name;
