@@ -1,6 +1,6 @@
 # saitan LP — Status & Handoff
 
-**最終更新**: 2026-05-11 12:05
+**最終更新**: 2026-05-12（UTM / 媒体マクロ汎用転送を実装、`_shared/intake-payload.js` 新設）
 **ステータス**: ✅ **Vercel 本番反映完了** — `https://shukatsu.enosapo.com/saitan/` で稼働中
 **次セッションでの読み方**: このファイルだけ読めば現状把握できるよう自己完結的に記述。
 
@@ -78,6 +78,45 @@ marketing/shukatsu/lp/saitan/
 | `assets/` | Figma 由来 8 ファイル（hero/laurel×3/ribbon/bubble/dot×2）。月桂樹は SVG パスのみで「平均21日で内定」等のテキストは HTML 側でオーバーレイ実装。 | ✅ |
 | `submit.php` | LP からの POST を受けて CRM API に転送する自ドメイン中継。`X-LP-Secret` ヘッダーをここで付与（HTML 露出を回避）+ **Origin/Referer 自ドメイン照合**（2026-05-07 追加、secret 漏洩時の二段目防御）。`$UPSTREAM_URL` は本番値 `https://enovance-crm.vercel.app/api/lp/intake`（2026-05-11 訂正、`enovance.jp` ドメインは未取得のため Vercel デフォルトに統一）。`$LP_INTAKE_SECRET` のみデプロイ前に差し替えが必要。 | ✅ 保持 |
 | `.htaccess` | HTML / PHP のキャッシュ無効化。モバイル WebView で古い版が掴まれる事故防止。Apache 前提。 | ✅ 保持 |
+
+---
+
+## 🆕 2026-05-12 UTM / 媒体マクロ汎用転送を実装
+
+LP のフォーム送信時に URL クエリパラメータを CRM intake に転送する汎用ロジックを、全 LP 共通モジュール `_shared/intake-payload.js` として実装した。従来は `index.html` 内に UTM 5 項目だけハードコードで抜き出していた（commit `3cda60c`）が、これを「**予約語以外の全クエリパラメータを転送**」する汎用設計に置き換え、共通モジュール化した。
+
+### 実装内容
+- `~/.company/marketing/shukatsu/lp/_shared/intake-payload.js` を新設（saitan + 将来の全 LP 共用）。`window.IntakePayload.collectQueryParams()` を公開
+- `saitan/index.html` に `<script src="../_shared/intake-payload.js"></script>` を追加（既存の送信スクリプト直前）
+- フォーム送信時、従来の UTM 5 項目ハードコード抽出を `window.IntakePayload.collectQueryParams()` に置換し、`payload` の **先頭** に spread（`{ ...queryParams, source, name, ... }`）→ `?source=xxx` 等の URL 改ざんで LP 固有フィールドが上書きされない
+- モジュールが読み込めなかった場合も送信は止めない（`window.IntakePayload` の存在チェックを挟む、CV 優先）
+
+### 仕様（共通モジュール）
+- LP 内部制御パラメータ（`debug` / `preview` / `lp_preview` / `no_cache` / `cache_bust`）はブラックリストで除外
+- キー名は英数字 + `_` `-` `.` のみ許可、値は最大 500 文字に切り詰め、合計最大 30 パラメータ
+- それ以外は全て転送（汎用設計、新媒体は LP 側無修正で対応可能）
+
+### 対応する媒体マクロ（参考、リストは「メモ」であって挙動には影響しない）
+- Meta: `utm_*`, `fb_adset_id`, `fb_ad_id`, `fb_placement` 等
+- A8.net: `a8`
+- バリューコマース: `sid`, `pid`
+- Google Ads: `gclid`, `device`, `network` 等（将来用）
+- その他: 予約語以外は全て自動転送（CRM 側マスタ追加のみで対応）
+
+### バリデーションの責務分担
+- LP 側（`intake-payload.js`）: 最低限のサニタイズ（キー文字種 / 値長 / 個数）、攻撃面の縮小
+- `api/submit.ts`: なし（`req.text()` で生取得し、中身を見ずに転送する素通し設計。**今回も無修正**）
+- CRM `/api/lp/intake`: zod による厳格バリデーション + `extractAspParams` で予約語以外を `crm_inflows.utm_params.asp_params` に分離保存
+
+### 関連 CRM 側実装（既存、本タスクでは触っていない）
+- Phase 27-C: `extractAspParams`（予約語以外を `asp_params` に汎用保存）+ `lp-matcher`（UTM 5 項目で LP/channel 動的解決）
+- Phase 27-D: 物理 LP × UTM 変種マスタ（`crm_physical_lps` / `crm_lps`）
+- Phase 27-E: Meta チャネル統合（feed/Reels/Stories → `ad_meta` に集約）
+
+### 本番反映前のオーナー確認事項
+1. プレビュー URL でフォーム送信し、CRM Supabase の `crm_inflows.utm_params`（特に `asp_params`）に UTM + 媒体マクロが保存されることを確認
+2. WebView（LINE / Instagram / X）アプリ内ブラウザでも CV できることを確認（2026-05-07 standard-a の事故再発防止。今回は `submit.ts` 無修正なので影響は無い見込みだが念のため）
+3. `?debug=1` 等の LP 内部用パラメータが CRM に届いていないこと（ブラックリスト動作）を確認
 
 ---
 

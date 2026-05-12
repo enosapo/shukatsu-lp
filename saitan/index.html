@@ -985,6 +985,8 @@
   </footer>
 </div>
 
+<!-- 全 LP 共通: URL クエリパラメータ（UTM / 媒体マクロ）を payload に汎用転送するモジュール -->
+<script src="../_shared/intake-payload.js"></script>
 <script>
   // ===== ▼ 安全な送信パターン（このセクションは触らない） =====
   const LP_SOURCE = 'saitan';
@@ -1090,16 +1092,17 @@
     const timeStr = pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
     const applicationId = APPLICATION_ID_PREFIX + '-' + dateStr + '-' + timeStr;
 
-    // URL クエリから UTM パラメータを取得（広告計測用）
-    // CRM API は .passthrough() で未知フィールドを受け付け、crm_inflows.utm_params に格納される
-    const urlParams = new URLSearchParams(window.location.search);
-    const utm = {};
-    for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
-      const v = urlParams.get(key);
-      if (v) utm[key] = v;
-    }
+    // URL クエリパラメータを payload にマージ（広告計測用）
+    // UTM 5 項目 + 媒体マクロ（Meta fb_*, A8 a8, バリューコマース sid/pid 等）+ 将来の新媒体パラメータを汎用転送。
+    // 予約語以外は CRM /api/lp/intake が crm_inflows.utm_params.asp_params に自動保存する（Phase 27-C）。
+    // 収集ロジックは _shared/intake-payload.js（全 LP 共通モジュール）に集約。万一読み込めなくても送信は止めない（CV 優先）。
+    const queryParams =
+      (window.IntakePayload && typeof window.IntakePayload.collectQueryParams === 'function')
+        ? window.IntakePayload.collectQueryParams()
+        : {};
 
     const payload = {
+      ...queryParams,            // 先頭で展開 → 以降の LP 固有フィールドが必ず優先（?source=xxx 等の改ざん対策）
       source:        LP_SOURCE,
       name:          formData.name,
       phone:         formData.phone,
@@ -1108,7 +1111,6 @@
       feeling:       formData.feeling,
       status:        formData.status,
       applicationId: applicationId,
-      ...utm,
     };
 
     window.dataLayer = window.dataLayer || [];
