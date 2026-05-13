@@ -1145,9 +1145,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       console.error('送信エラー:', err);
     }
 
-    const thanksUrl = 'thanks.html?oid=' + encodeURIComponent(applicationId)
-      + (formData.name ? '&name=' + encodeURIComponent(formData.name) : '');
-    window.location.href = thanksUrl;
+    // 名前は個人情報のため URL クエリではなく sessionStorage 経由でサンクスページへ渡す
+    // （URL 履歴・Referer・スクリーンショット共有での氏名漏洩を防ぐ）
+    try { sessionStorage.setItem('thanksName', formData.name); } catch (e) {}
+    window.location.href = 'thanks.html?oid=' + encodeURIComponent(applicationId);
   });
 </script>
 

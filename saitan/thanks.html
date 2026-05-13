@@ -651,8 +651,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   try { sessionStorage.removeItem('pending_submission'); } catch (e) {}
 
   const params = new URLSearchParams(window.location.search);
-  const name = params.get('name');
   const oid = params.get('oid') || '';
+
+  // 名前は URL クエリではなく sessionStorage から読む（個人情報を URL に載せない）
+  // 読んだら即削除してワンタイム化：戻る→進む等で再表示時に名前は出ない
+  let name = '';
+  try {
+    name = sessionStorage.getItem('thanksName') || '';
+    sessionStorage.removeItem('thanksName');
+  } catch (e) {}
 
   if (name) {
     const titleEl = document.getElementById('thanks-title');
