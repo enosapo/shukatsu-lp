@@ -673,8 +673,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
+  // CV イベントを GTM へ。流入クエリ（utm_*, sid/pid, gclid, fb_*, gads_* 等）は
+  // index.html から引き継いでいるので、GTM の CV タグはここで dataLayer / URL から読める。
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: 'cv_complete', transaction_id: oid });
+  window.dataLayer.push({
+    event: 'cv_complete',
+    transaction_id: oid,
+    utm_source:   params.get('utm_source')   || '',
+    utm_medium:   params.get('utm_medium')   || '',
+    utm_campaign: params.get('utm_campaign') || '',
+    utm_content:  params.get('utm_content')  || '',
+    utm_term:     params.get('utm_term')     || ''
+  });
 </script>
 
 </body>

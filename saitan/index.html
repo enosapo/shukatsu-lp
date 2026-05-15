@@ -1148,7 +1148,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // 名前は個人情報のため URL クエリではなく sessionStorage 経由でサンクスページへ渡す
     // （URL 履歴・Referer・スクリーンショット共有での氏名漏洩を防ぐ）
     try { sessionStorage.setItem('thanksName', formData.name); } catch (e) {}
-    window.location.href = 'thanks.html?oid=' + encodeURIComponent(applicationId);
+    // 流入クエリ（utm_*, sid/pid, gclid, fb_*, gads_* 等）は全部サンクスページに引き継ぐ。
+    // GTM の CV タグや外部ピクセルが「どの流入源の CV か」を URL から判定できるようにするため。
+    // 媒体非依存（媒体を増やしても LP 側コード改修不要）。
+    const thanksParams = new URLSearchParams(window.location.search);
+    thanksParams.set('oid', applicationId);
+    window.location.href = 'thanks?' + thanksParams.toString();
   });
 </script>
 
