@@ -25,3 +25,4 @@ node_modules/
 # saitan の Xserver 時代の遺物 (Vercel では api/submit.ts が代替)
 /saitan/submit.php
 /saitan/.htaccess
+.vercel
