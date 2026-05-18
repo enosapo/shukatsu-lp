@@ -133,6 +133,25 @@
       white-space: nowrap;
     }
     .mv__heading .black { color: #333; }
+    .mv__heading .emp {
+      position: relative;
+      display: inline-block;
+    }
+    .mv__heading .emp::before {
+      content: '';
+      position: absolute;
+      top: -0.12em;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1.3em;
+      height: 0.2em;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 100% 100%;
+      pointer-events: none;
+    }
+    .mv__heading .emp--left::before { background-image: url('assets/dot-left.svg'); }
+    .mv__heading .emp--right::before { background-image: url('assets/dot-right.svg'); }
     .mv__sub {
       position: absolute;
       top: 19.6%;       /* 98px / 500 */
@@ -855,7 +874,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <section class="mv">
     <div class="mv__bg" role="presentation"></div>
     <div class="mv__inner">
-      <h1 class="mv__heading"><span>内定</span><span class="black">を、</span><span>最短</span><span class="black">で。</span></h1>
+      <h1 class="mv__heading"><span class="emp emp--left">内定</span><span class="black">を、</span><span class="emp emp--right">最短</span><span class="black">で。</span></h1>
       <p class="mv__sub">企業ごとに最適化した面接対策や<br class="br-sp">エノサポ就活独自の<br class="br-pc">選考ルートのご紹介で、<br class="br-sp">最短で内定獲得が可能</p>
       <div class="mv__ribbon">最短当日中に専任アドバイザーからご連絡</div>
       <div class="mv__photo-spacer" aria-hidden="true"></div>
