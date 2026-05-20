@@ -1,6 +1,6 @@
 # saitan LP — Status & Handoff
 
-**最終更新**: 2026-05-12（UTM / 媒体マクロ汎用転送を実装、`_shared/intake-payload.js` 新設）
+**最終更新**: 2026-05-20（thanks CTA を就活ボード登録導線に変更 + ハンドオフ Cookie 発行を実装）
 **ステータス**: ✅ **Vercel 本番反映完了** — `https://shukatsu.enosapo.com/saitan/` で稼働中
 **次セッションでの読み方**: このファイルだけ読めば現状把握できるよう自己完結的に記述。
 
@@ -78,6 +78,27 @@ marketing/shukatsu/lp/saitan/
 | `assets/` | Figma 由来 8 ファイル（hero/laurel×3/ribbon/bubble/dot×2）。月桂樹は SVG パスのみで「平均21日で内定」等のテキストは HTML 側でオーバーレイ実装。 | ✅ |
 | `submit.php` | LP からの POST を受けて CRM API に転送する自ドメイン中継。`X-LP-Secret` ヘッダーをここで付与（HTML 露出を回避）+ **Origin/Referer 自ドメイン照合**（2026-05-07 追加、secret 漏洩時の二段目防御）。`$UPSTREAM_URL` は本番値 `https://enovance-crm.vercel.app/api/lp/intake`（2026-05-11 訂正、`enovance.jp` ドメインは未取得のため Vercel デフォルトに統一）。`$LP_INTAKE_SECRET` のみデプロイ前に差し替えが必要。 | ✅ 保持 |
 | `.htaccess` | HTML / PHP のキャッシュ無効化。モバイル WebView で古い版が掴まれる事故防止。Apache 前提。 | ✅ 保持 |
+
+---
+
+## 🆕 2026-05-20 thanks CTA 変更 + 就活ボード ハンドオフ Cookie
+
+### 変更内容
+
+1. **thanks.html の CTA 差し替え** — 「トップページへ戻る」（`enovance.co.jp`）→「就活管理アプリを登録する」（`https://shukatsu.enosapo.com/board/signup`）。スタイルはグレーのまま。commit `a4e52ec`。
+2. **`api/submit.ts` でハンドオフ Cookie 発行** — CRM intake 成功時、返ってきた `candidate_id` を HMAC-SHA256 署名 token に詰めて `Set-Cookie: hk=...; Domain=shukatsu.enosapo.com; Path=/; Max-Age=2592000; Secure; SameSite=Lax` で発行。`_shared/handoff-token.ts`（署名ユーティリティ、Web Crypto API）新設。commit `345b6b5`。
+
+### 目的
+
+saitan で取った未検証の電話・メールを、就活ボード登録時に検証済データで上書きするため。Cookie を読んだ就活ボード `/board/signup` が `/api/signup` に token を転送 → CRM trigger が「board 情報優先」で saitan candidate を上書きする。
+
+### 要 env
+
+`SAITAN_HANDOFF_SECRET`（shukatsu-lp / shukatsu-board の両 Vercel プロジェクトに同値）。Sensitive ON で設定済。未設定なら無音スキップ（CV 自体は止めない）。
+
+### 全体設計の正本
+
+CRM `docs/STATUS.md`「2026-05-20」セクション、`~/.company/secretary/notes/2026-05-20-decisions.md`。
 
 ---
 
