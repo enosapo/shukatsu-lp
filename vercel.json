@@ -1,6 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/saitan", "destination": "/saitan/", "permanent": true },
+    { "source": "/standard-c", "destination": "/standard-c/", "permanent": true },
+    { "source": "/lp/board", "destination": "/lp/board/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)\\.html",
