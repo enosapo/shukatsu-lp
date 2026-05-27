@@ -95,7 +95,7 @@
     .mv__bg {
       position: absolute;
       inset: 0;
-      background-image: url('assets/hero-bg.jpg');
+      background-image: url('/saitan/assets/hero-bg.jpg');
       background-size: 175.73% 105.98%;
       /* CSS bg-position % uses (container - image) formula, not image-left%. Converted from Figma left:-51.62%, top:-5.88% */
       background-position: 68.17% 98.33%;
@@ -150,8 +150,8 @@
       background-size: 100% 100%;
       pointer-events: none;
     }
-    .mv__heading .emp--left::before { background-image: url('assets/dot-left.svg'); }
-    .mv__heading .emp--right::before { background-image: url('assets/dot-right.svg'); }
+    .mv__heading .emp--left::before { background-image: url('/saitan/assets/dot-left.svg'); }
+    .mv__heading .emp--right::before { background-image: url('/saitan/assets/dot-right.svg'); }
     .mv__sub {
       position: absolute;
       top: 19.6%;       /* 98px / 500 */
@@ -678,7 +678,7 @@
       .mv__bg {
         position: absolute;
         inset: 0;
-        background-image: url('assets/hero-bg.jpg');
+        background-image: url('/saitan/assets/hero-bg.jpg');
         background-size: 118.75% 243.49%;
         background-position: left bottom;
         background-repeat: no-repeat;
@@ -880,7 +880,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="mv__photo-spacer" aria-hidden="true"></div>
       <div class="mv__laurels">
         <div class="laurel">
-          <img class="laurel__svg" src="assets/laurel-01.svg" alt="">
+          <img class="laurel__svg" src="/saitan/assets/laurel-01.svg" alt="">
           <div class="laurel__text">
             <span class="label">平均</span>
             <span class="number">21<span class="unit">日</span></span>
@@ -888,7 +888,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
         <div class="laurel">
-          <img class="laurel__svg" src="assets/laurel-02.svg" alt="">
+          <img class="laurel__svg" src="/saitan/assets/laurel-02.svg" alt="">
           <div class="laurel__text">
             <span class="label">累計サポート</span>
             <span class="number">3,200<span class="unit">名</span></span>
@@ -896,7 +896,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
         <div class="laurel">
-          <img class="laurel__svg" src="assets/laurel-03.svg?v=20260518" alt="">
+          <img class="laurel__svg" src="/saitan/assets/laurel-03.svg?v=20260518" alt="">
           <div class="laurel__text">
             <span class="label">Google</span>
             <span class="number">★<span class="unit">5</span></span>
@@ -1044,7 +1044,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <!-- 全 LP 共通: URL クエリパラメータ（UTM / 媒体マクロ）を payload に汎用転送するモジュール -->
-<script src="../_shared/intake-payload.js"></script>
+<script src="/_shared/intake-payload.js"></script>
 <script>
   // ===== ▼ 安全な送信パターン（このセクションは触らない） =====
   const LP_SOURCE = 'saitan';
@@ -1196,7 +1196,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // 媒体非依存（媒体を増やしても LP 側コード改修不要）。
     const thanksParams = new URLSearchParams(window.location.search);
     thanksParams.set('oid', applicationId);
-    window.location.href = 'thanks?' + thanksParams.toString();
+    window.location.href = '/saitan/thanks?' + thanksParams.toString();
   });
 </script>
 
