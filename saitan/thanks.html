@@ -347,6 +347,60 @@
     .btn-back-top:hover { background: #ccc; }
     .btn-back-top:active { transform: translateY(1px); }
 
+    /* ========== 面談日程 確定カード ========== */
+    .booking-confirm {
+      border: 1.5px solid #d22d26;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #fdf2f1;
+      text-align: left;
+    }
+    .booking-confirm__head {
+      font-weight: 700;
+      font-size: 16px;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .booking-confirm__head .check { color: #d22d26; font-size: 18px; line-height: 1; }
+    .booking-confirm__row { font-size: 15px; line-height: 1.6; color: #333; }
+    .booking-confirm__row .label {
+      display: block;
+      font-size: 12px;
+      color: #a3554f;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .booking-confirm__dt { font-size: 18px; font-weight: 700; }
+    .booking-confirm__meet-url {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c50b0;
+      word-break: break-all;
+      text-decoration: underline;
+    }
+    .btn-meet {
+      width: 100%;
+      height: 52px;
+      padding: 12px 20px;
+      background: #333;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      transition: transform 0.1s ease;
+    }
+    .btn-meet:active { transform: translateY(1px); }
+
     /* ========== Footer (Figma SP: 390x227, py-64, gap-16) ========== */
     .footer {
       background: #fff;
@@ -607,6 +661,30 @@
     @media (min-width: 768px) and (max-width: 880px) {
       .mv__heading { white-space: normal; font-size: 44px; }
     }
+
+    /* ========== サンクスページ専用レイアウト（MV / 販促バナーを除いた完了画面） ========== */
+    /* トップと同じ見た目にならないよう、ヒーローと「就活サポートを受ける」赤バナーを撤去し、
+       ヘッダー → 完了カード → フッター のシンプルな構成にする（sales サンクスと同思想）。 */
+    .thanks-badge {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #fdf2f1; color: #d22d26;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto;
+    }
+    .thanks-badge svg { width: 28px; height: 28px; }
+    .thanks-title { text-align: center; }
+    .board__contents { padding-top: 48px; }
+    @media (min-width: 768px) {
+      /* MV が無いので board のヒーロー・オーバーラップ（負の上マージン）を解除して中央寄せ */
+      .board {
+        position: static;
+        margin: 56px auto;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.08);
+      }
+      .board__contents { padding: 56px 40px 64px; }
+      .thanks-badge { width: 64px; height: 64px; }
+      .thanks-badge svg { width: 32px; height: 32px; }
+    }
   </style>
 </head>
 <body>
@@ -624,60 +702,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </header>
 
-  <section class="mv">
-    <div class="mv__bg" role="presentation"></div>
-    <div class="mv__inner">
-      <h1 class="mv__heading"><span class="emp emp--left">内定</span><span class="black">を、</span><span class="emp emp--right">最短</span><span class="black">で。</span></h1>
-      <p class="mv__sub">企業ごとに最適化した面接対策や<br class="br-sp">エノサポ就活独自の<br class="br-pc">選考ルートのご紹介で、<br class="br-sp">最短で内定獲得が可能</p>
-      <div class="mv__ribbon">最短当日中に専任アドバイザーからご連絡</div>
-      <div class="mv__photo-spacer" aria-hidden="true"></div>
-      <div class="mv__laurels">
-        <div class="laurel">
-          <img class="laurel__svg" src="/saitan/assets/laurel-01.svg" alt="">
-          <div class="laurel__text">
-            <span class="label">平均</span>
-            <span class="number">21<span class="unit">日</span></span>
-            <span class="caption">で内定</span>
-          </div>
-        </div>
-        <div class="laurel">
-          <img class="laurel__svg" src="/saitan/assets/laurel-02.svg" alt="">
-          <div class="laurel__text">
-            <span class="label">累計サポート</span>
-            <span class="number">3,200<span class="unit">名</span></span>
-            <span class="caption">以上</span>
-          </div>
-        </div>
-        <div class="laurel">
-          <img class="laurel__svg" src="/saitan/assets/laurel-03.svg?v=20260518" alt="">
-          <div class="laurel__text">
-            <span class="label">Google</span>
-            <span class="number">★<span class="unit">5</span></span>
-          </div>
-        </div>
-      </div>
-      <p class="mv__laurels-caption">※2026年5月1日時点 自社調査による</p>
-    </div>
-  </section>
-
   <section class="board">
-    <header class="board__title">
-      <div class="board__bubble" aria-hidden="true">
-        <span class="board__bubble-free">完全無料</span>
-        <span class="board__bubble-text">30秒で完了</span>
-      </div>
-      <h2>就活サポートを受ける</h2>
-      <p>あなたに合った就活プランをご提案します。</p>
-    </header>
-
     <div class="board__contents">
       <div class="thanks-container">
+        <div class="thanks-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
         <h2 class="thanks-title" id="thanks-title">ご登録ありがとうございます。</h2>
         <div class="thanks-body">
           <p>エノサポ就活への無料会員登録が完了しました。</p>
           <p>専任のキャリアアドバイザーが、あなたの情報を確認のうえ、最短当日にご連絡いたします。</p>
           <p>登録いただいたお電話番号・メールアドレスにご連絡しますので、着信・受信設定をご確認ください。</p>
         </div>
+
+        <div id="booking-confirm" class="booking-confirm" hidden>
+          <div class="booking-confirm__head"><span class="check">✓</span><span>面談日程が確定しました</span></div>
+          <div class="booking-confirm__row">
+            <span class="label">日時（オンライン／約30分）</span>
+            <span class="booking-confirm__dt" id="bc-datetime">—</span>
+          </div>
+          <div class="booking-confirm__row" id="bc-ca-row" hidden>
+            <span class="label">担当アドバイザー</span>
+            <span id="bc-ca">—</span>
+          </div>
+          <div class="booking-confirm__row" id="bc-meet-row" hidden>
+            <span class="label">Google Meet（当日はこちらから参加）</span>
+            <a class="booking-confirm__meet-url" id="bc-meet-url" href="#" target="_blank" rel="noopener">—</a>
+          </div>
+          <a class="btn-meet" id="bc-meet" href="#" target="_blank" rel="noopener" hidden>Google Meet のリンクを開く</a>
+        </div>
+
         <p class="thanks-id" id="thanks-id"></p>
         <a class="btn-back-top" href="https://shukatsu.enosapo.com/board/signup" rel="noopener">就活管理アプリを登録する</a>
       </div>
@@ -712,6 +766,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   if (oid) {
     document.getElementById('thanks-id').textContent = '受付番号: ' + oid;
   }
+
+  // 日程調整ステップで予約が確定していれば、確定カードを表示する（ワンタイム）。
+  try {
+    const rawBooking = sessionStorage.getItem('thanksBooking');
+    if (rawBooking) {
+      sessionStorage.removeItem('thanksBooking');
+      const b = JSON.parse(rawBooking);
+      if (b && b.scheduled_at) {
+        const dt = new Date(b.scheduled_at);
+        const fmt = dt.toLocaleString('ja-JP', {
+          timeZone: 'Asia/Tokyo', month: 'long', day: 'numeric',
+          weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false
+        });
+        document.getElementById('bc-datetime').textContent = fmt + '〜';
+        if (b.ca_name) {
+          document.getElementById('bc-ca').textContent = b.ca_name + ' が担当します';
+          document.getElementById('bc-ca-row').hidden = false;
+        }
+        if (b.meet_url) {
+          const m = document.getElementById('bc-meet');
+          m.href = b.meet_url;
+          m.hidden = false;
+          // URL テキストも表示（コピー / 控え用）。表示は短く、リンク先はフル URL。
+          const urlEl = document.getElementById('bc-meet-url');
+          urlEl.href = b.meet_url;
+          urlEl.textContent = b.meet_url.replace(/^https?:\/\//, '');
+          document.getElementById('bc-meet-row').hidden = false;
+        }
+        document.getElementById('booking-confirm').hidden = false;
+        // 予約確定時は「最短当日にご連絡」系の一般案内（2・3 番目の段落）を隠す（日時が確定しているため）。
+        document.querySelectorAll('.thanks-body p').forEach((el, i) => { if (i >= 1) el.hidden = true; });
+      }
+    }
+  } catch (e) {}
 
   function escapeHtml(s) {
     return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

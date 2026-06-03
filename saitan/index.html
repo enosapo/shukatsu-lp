@@ -320,6 +320,49 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ========== 面談日程調整スクリーン（送信後にウィザードと差し替え） ========== */
+    /* .step と同じ「既定 display:none / .is-active で表示」パターン。
+       hidden 属性に依存しないので display 上書き事故が起きない。 */
+    .booking-screen { display: none; }
+    .booking-screen.is-active {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    .booking-lead { font-size: 14px; line-height: 1.7; color: #555; }
+    .booking-lead strong { color: #d22d26; font-weight: 700; }
+    .booking-dates {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding-bottom: 4px; -webkit-overflow-scrolling: touch;
+    }
+    .booking-date-btn {
+      flex: 0 0 auto; min-width: 60px; padding: 10px 8px;
+      background: #fff; border: 1.5px solid #ddd; border-radius: 8px;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      color: #333; cursor: pointer;
+      transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .booking-date-btn .bd-md { font-weight: 700; font-size: 15px; line-height: 1.2; }
+    .booking-date-btn .bd-dow { font-size: 11px; color: #888; line-height: 1.2; }
+    .booking-date-btn:active { transform: translateY(1px); }
+    .booking-date-btn.selected { background: #333; border-color: #333; color: #fff; }
+    .booking-date-btn.selected .bd-dow { color: #ddd; }
+    .booking-slots-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .booking-slots-label { font-size: 13px; color: #333; font-weight: 700; line-height: 1.5; }
+    .booking-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .booking-slot-btn {
+      padding: 12px 4px; background: #fff; border: 1.5px solid #d22d26;
+      border-radius: 8px; color: #d22d26; font-weight: 700; font-size: 15px;
+      cursor: pointer; transition: transform 0.1s ease, background 0.15s ease;
+    }
+    .booking-slot-btn:hover { background: #fdeceb; }
+    .booking-slot-btn:active { transform: translateY(1px); }
+    .booking-slot-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .booking-slot-btn.selected { background: #d22d26; color: #fff; }
+    .booking-skip { text-align: center; margin-top: 4px; }
+    .booking-skip a { font-size: 12px; color: #aaa; text-decoration: underline; cursor: pointer; }
+
     .progress {
       display: flex;
       flex-direction: column;
@@ -1033,6 +1076,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </fieldset>
 
       </form>
+
+      <!-- 面談日程調整スクリーン（送信後にウィザードと差し替えて表示。リードは送信時点で確保済） -->
+      <div id="booking-screen" class="booking-screen">
+        <div class="progress">
+          <div class="progress__label"><span class="name">日程調整</span><span class="count">あと1ステップ</span></div>
+          <div class="progress__bar"><div class="progress__fill" style="width: 100%"></div></div>
+        </div>
+        <h3 class="question"><span class="accent">面談日程</span>をお選びください</h3>
+        <p class="booking-lead">ご希望の枠を選ぶと、専任アドバイザーと<strong>最短で面談</strong>できます（オンライン／約30分）。</p>
+        <div class="booking-dates" id="booking-dates"></div>
+        <div class="booking-slots-wrap">
+          <p class="booking-slots-label" id="booking-slots-label">まず日付を選択してください</p>
+          <div class="booking-slots" id="booking-slots"></div>
+        </div>
+        <p class="booking-skip"><a id="booking-skip">日程は後で調整する</a></p>
+      </div>
     </div>
   </section>
 
@@ -1178,26 +1237,162 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const bigText = submitBtn.querySelector('.btn-submit__text .big');
     if (bigText) bigText.textContent = '送信中...';
 
+    // サンクスページ遷移を共通化（氏名は個人情報のため sessionStorage、流入クエリ + oid を引き継ぐ）。
+    // 名前は URL 履歴・Referer・スクリーンショット共有での漏洩を防ぐため URL に載せない。
+    // 流入クエリ（utm_*, sid/pid, gclid, fb_*, gads_* 等）は GTM の CV タグや外部ピクセルが
+    // 「どの流入源の CV か」を URL から判定できるよう全部引き継ぐ（媒体非依存）。
+    const goToThanks = () => {
+      try { sessionStorage.setItem('thanksName', formData.name); } catch (e) {}
+      const thanksParams = new URLSearchParams(window.location.search);
+      thanksParams.set('oid', applicationId);
+      window.location.href = '/saitan/thanks?' + thanksParams.toString();
+    };
+
+    // リード登録（/api/submit → CRM intake）。candidate_id が返れば日程調整スクリーンへ。
+    let candidateId = null;
     try {
-      await fetch('/api/submit', {
+      const res = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      const json = await res.json().catch(() => null);
+      if (json && json.candidate_id) candidateId = json.candidate_id;
     } catch (err) {
       console.error('送信エラー:', err);
     }
 
-    // 名前は個人情報のため URL クエリではなく sessionStorage 経由でサンクスページへ渡す
-    // （URL 履歴・Referer・スクリーンショット共有での氏名漏洩を防ぐ）
-    try { sessionStorage.setItem('thanksName', formData.name); } catch (e) {}
-    // 流入クエリ（utm_*, sid/pid, gclid, fb_*, gads_* 等）は全部サンクスページに引き継ぐ。
-    // GTM の CV タグや外部ピクセルが「どの流入源の CV か」を URL から判定できるようにするため。
-    // 媒体非依存（媒体を増やしても LP 側コード改修不要）。
-    const thanksParams = new URLSearchParams(window.location.search);
-    thanksParams.set('oid', applicationId);
-    window.location.href = '/saitan/thanks?' + thanksParams.toString();
+    // リードは送信時点で確保済。candidate_id が取れたらウィザードを日程調整スクリーンに
+    // 差し替える。取れない（intake 失敗等）ならそのままサンクスへ進める（CV を止めない）。
+    if (candidateId) {
+      startBookingStep(candidateId, goToThanks);
+    } else {
+      goToThanks();
+    }
   });
+
+  // ===== 面談日程調整スクリーン =====
+  // 送信後、ウィザード（#wizard）を丸ごと隠して #booking-screen に差し替える（URL は変えない）。
+  // 就活ボード予約対象アドバイザー（新卒プール）の空き枠を /api/lp-booking-availability で取得し、
+  // 選択枠を /api/lp-booking-create で確定（CA 自動割当 + Google カレンダー反映）。
+  // ⚠️ どちらも絶対パス。shukatsu-board プロジェクトの next.config rewrites が shukatsu-lp へプロキシする。
+  const BOOKING_SLOTS = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+  const WEEKDAY_JP = ['日','月','火','水','木','金','土'];
+
+  function startBookingStep(candidateId, goToThanks) {
+    const wizard = document.getElementById('wizard');
+    const screen = document.getElementById('booking-screen');
+    if (!screen) { goToThanks(); return; }
+    // ウィザードを消して日程調整スクリーンを表示（排他切替）。
+    if (wizard) wizard.style.display = 'none';
+    screen.classList.add('is-active');
+    const anchor = document.querySelector('.board__title');
+    if (anchor) { try { anchor.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {} }
+
+    const datesEl = document.getElementById('booking-dates');
+    const slotsEl = document.getElementById('booking-slots');
+    const slotsLabel = document.getElementById('booking-slots-label');
+    let confirming = false;
+
+    const fmtDateKey = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    // 翌日以降の平日を最大 10 日分（当日は除外＝準備時間の確保。土日除外）。
+    const dates = [];
+    const cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+    cursor.setDate(cursor.getDate() + 1); // 当日を飛ばして翌日から
+    while (dates.length < 10) {
+      const dow = cursor.getDay();
+      if (dow !== 0 && dow !== 6) dates.push(new Date(cursor));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    dates.forEach((d) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'booking-date-btn';
+      btn.innerHTML = `<span class="bd-md">${d.getMonth() + 1}/${d.getDate()}</span><span class="bd-dow">(${WEEKDAY_JP[d.getDay()]})</span>`;
+      btn.addEventListener('click', () => {
+        if (confirming) return;
+        datesEl.querySelectorAll('.booking-date-btn').forEach((b) => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        loadSlots(fmtDateKey(d));
+      });
+      datesEl.appendChild(btn);
+    });
+
+    async function loadSlots(dateKey, opts) {
+      opts = opts || {};
+      slotsEl.innerHTML = '';
+      if (!opts.silent) slotsLabel.textContent = '空き枠を確認中...';
+      let available = [];
+      try {
+        const url = `/api/lp-booking-availability?date=${encodeURIComponent(dateKey)}&slots=${BOOKING_SLOTS.join(',')}`;
+        const res = await fetch(url);
+        const json = await res.json().catch(() => null);
+        if (json && Array.isArray(json.available)) available = json.available;
+      } catch (e) {}
+
+      if (available.length === 0) {
+        slotsLabel.textContent = 'この日は空き枠がありません。別の日をお選びください。';
+        return;
+      }
+      slotsLabel.textContent = opts.okMsg || 'ご希望の時間を選択してください';
+      available.forEach((slot) => {
+        const sb = document.createElement('button');
+        sb.type = 'button';
+        sb.className = 'booking-slot-btn';
+        sb.textContent = slot;
+        sb.addEventListener('click', () => confirmBooking(dateKey, slot, sb));
+        slotsEl.appendChild(sb);
+      });
+    }
+
+    async function confirmBooking(dateKey, slot, btn) {
+      if (confirming) return;
+      confirming = true;
+      slotsEl.querySelectorAll('.booking-slot-btn').forEach((b) => { b.disabled = true; });
+      btn.classList.add('selected');
+      btn.textContent = '予約中...';
+
+      let result = null;
+      try {
+        const res = await fetch('/api/lp-booking-create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ candidate_id: candidateId, date: dateKey, slot })
+        });
+        result = await res.json().catch(() => null);
+      } catch (e) {}
+
+      if (result && result.ok) {
+        try {
+          sessionStorage.setItem('thanksBooking', JSON.stringify({
+            ca_name: result.ca_name || null,
+            scheduled_at: result.scheduled_at || null,
+            meet_url: result.meet_url || null
+          }));
+        } catch (e) {}
+        goToThanks();
+        return;
+      }
+
+      // 失敗（枠が埋まった等）→ 空き枠を取り直して選び直し。
+      confirming = false;
+      const msg = (result && result.error === 'no_advisor_available')
+        ? 'その枠は埋まってしまいました。別の時間をお選びください。'
+        : '予約に失敗しました。別の時間をお試しください。';
+      loadSlots(dateKey, { silent: true, okMsg: msg });
+    }
+
+    const skip = document.getElementById('booking-skip');
+    if (skip) skip.addEventListener('click', (e) => { e.preventDefault(); if (!confirming) goToThanks(); });
+  }
 </script>
 
 </body>
