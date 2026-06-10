@@ -119,21 +119,22 @@
       z-index: 1;
     }
     .mv__badge {
-      /* 「完全無料」(.board__bubble-free) と同じ金グラデ × 白文字のバッジ */
+      /* ブランド赤 × 白文字 × 軽いスキューのバッジ（見出しの赤と統一） */
       position: absolute;
       top: 3px;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) skewX(-10deg);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 21px;
-      padding: 0 10px;
-      background: linear-gradient(143.93deg, #371d0f 25.287%, #dec06b 49.323%, #371d0f 74.142%);
+      height: 22px;
+      padding: 0 12px;
+      background: #d22d26;
       color: #fff;
       font-weight: 700;
       font-size: 12px;
       line-height: 1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       z-index: 2;
     }
     .mv__heading {
@@ -771,9 +772,9 @@
         /* inner の padding-top (clamp 48-65px) の中に収める: 常に heading の 8px 上 */
         top: calc(clamp(48px, 4.51vw, 65px) - 38px);
         left: clamp(120px, 11.11vw, 160px);
-        transform: none;
+        transform: skewX(-10deg);
         height: 30px;
-        padding: 0 14px;
+        padding: 0 16px;
         font-size: 16px;
       }
       .mv__heading {
