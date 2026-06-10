@@ -118,6 +118,24 @@
       inset: 0;
       z-index: 1;
     }
+    .mv__badge {
+      /* 「完全無料」(.board__bubble-free) と同じ金グラデ × 白文字のバッジ */
+      position: absolute;
+      top: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 21px;
+      padding: 0 10px;
+      background: linear-gradient(143.93deg, #371d0f 25.287%, #dec06b 49.323%, #371d0f 74.142%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 1;
+      z-index: 2;
+    }
     .mv__heading {
       position: absolute;
       top: 5.4%;        /* 27px / 500 */
@@ -749,6 +767,15 @@
         text-align: left !important;
         gap: 0;
       }
+      .mv__badge {
+        /* inner の padding-top (clamp 48-65px) の中に収める: 常に heading の 8px 上 */
+        top: calc(clamp(48px, 4.51vw, 65px) - 38px);
+        left: clamp(120px, 11.11vw, 160px);
+        transform: none;
+        height: 30px;
+        padding: 0 14px;
+        font-size: 16px;
+      }
       .mv__heading {
         position: static;
         top: auto; left: auto; right: auto;
@@ -917,6 +944,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <section class="mv">
     <div class="mv__bg" role="presentation"></div>
     <div class="mv__inner">
+      <span class="mv__badge">27卒限定</span>
       <h1 class="mv__heading"><span class="emp emp--left">内定</span><span class="black">を、</span><span class="emp emp--right">最短</span><span class="black">で。</span></h1>
       <p class="mv__sub">企業ごとに最適化した面接対策や<br class="br-sp">エノサポ就活独自の<br class="br-pc">選考ルートのご紹介で、<br class="br-sp">最短で内定獲得が可能</p>
       <div class="mv__ribbon">最短当日中に専任アドバイザーからご連絡</div>
