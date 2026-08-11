@@ -6,9 +6,22 @@
     { "source": "/standard-c", "destination": "/standard-c/", "permanent": true },
     { "source": "/lp/board", "destination": "/lp/board/", "permanent": true }
   ],
+  "rewrites": [
+    { "source": "/saitan/nomura", "destination": "/saitan/index.html" },
+    { "source": "/saitan/nomura/", "destination": "/saitan/index.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)\\.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/saitan/nomura(/?)",
       "headers": [
         {
           "key": "Cache-Control",

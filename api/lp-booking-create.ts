@@ -11,6 +11,8 @@
 // リクエスト: POST /api/lp-booking-create  Body: { candidate_id, date, slot }
 // レスポンス: CRM のレスポンス（{ ok, ca_name, scheduled_at, meet_url, calendar_synced }）をそのまま返す
 
+import { resolveAdvisorName } from '../_shared/booking-variants';
+
 export const config = { runtime: 'edge' };
 
 const UPSTREAM_URL = 'https://enovance-crm.vercel.app/api/lp-booking/create';
@@ -35,6 +37,12 @@ export default async function handler(req: Request): Promise<Response> {
   try {
     const obj = JSON.parse(incoming) as Record<string, unknown>;
     obj.pool = 'shinsotsu';
+    // 指名版 LP は variant → CRM 表示名を解決して advisor に載せ替える。
+    // ブラウザが送った variant / advisor はそのまま上流へ渡さない（改ざん対策）。
+    const advisorName = resolveAdvisorName(obj.variant);
+    delete obj.variant;
+    if (advisorName) obj.advisor = advisorName;
+    else delete obj.advisor;
     payload = JSON.stringify(obj);
   } catch {
     return Response.json({ ok: false, error: 'invalid payload' }, { status: 400 });

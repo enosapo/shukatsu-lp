@@ -1,8 +1,8 @@
 # saitan LP — Status & Handoff
 
-**最終更新**: 2026-05-20（thanks CTA を就活ボード登録導線に変更 + ハンドオフ Cookie 発行を実装）
-**ステータス**: ✅ **Vercel 本番反映完了** — `https://shukatsu.enosapo.com/saitan/` で稼働中
-**次セッションでの読み方**: このファイルだけ読めば現状把握できるよう自己完結的に記述。
+**最終更新**: 2026-07-16（STATUS を git 履歴に同期 — 面談日程調整ステップ / 27卒バッジ / cv_complete once-guard を反映）
+**ステータス**: ✅ **本番稼働中** — `https://shukatsu.enosapo.com/saitan/`。LP → CRM 送信 + 面談予約 → CRM 予定レコード → GCal 自動作成の 3 段が全て本番稼働（2026-06-03〜）
+**次セッションでの読み方**: このファイルだけ読めば現状把握できるよう自己完結的に記述。**直近の実装（2026-05-27〜07-13）は下記「🆕 2026-05-27〜07-13」節を最優先で読む**（それ以前の節は当時の作業ログ）。
 
 > ⚠️ **2026-05-11 大幅刷新**: Xserver/PHP 方式から **Vercel + Edge Function** に完全移行。本ファイル下部の「Xserver 時代の本番デプロイ手順」は historical reference として残置。現在の運用は `~/.company/marketing/shukatsu/lp/README.md` 参照。
 >
@@ -78,6 +78,55 @@ marketing/shukatsu/lp/saitan/
 | `assets/` | Figma 由来 8 ファイル（hero/laurel×3/ribbon/bubble/dot×2）。月桂樹は SVG パスのみで「平均21日で内定」等のテキストは HTML 側でオーバーレイ実装。 | ✅ |
 | `submit.php` | LP からの POST を受けて CRM API に転送する自ドメイン中継。`X-LP-Secret` ヘッダーをここで付与（HTML 露出を回避）+ **Origin/Referer 自ドメイン照合**（2026-05-07 追加、secret 漏洩時の二段目防御）。`$UPSTREAM_URL` は本番値 `https://enovance-crm.vercel.app/api/lp/intake`（2026-05-11 訂正、`enovance.jp` ドメインは未取得のため Vercel デフォルトに統一）。`$LP_INTAKE_SECRET` のみデプロイ前に差し替えが必要。 | ✅ 保持 |
 | `.htaccess` | HTML / PHP のキャッシュ無効化。モバイル WebView で古い版が掴まれる事故防止。Apache 前提。 | ✅ 保持 |
+
+---
+
+## 🆕 2026-05-27〜07-13（本番反映済・STATUS 未反映だった分をまとめて記録）
+
+> この節は 2026-07-16 に git 履歴（`git log --since=2026-05-20`）から遡って追記したもの。
+> 各項目は本番デプロイ済（`shukatsu-lp` Vercel、`shukatsu.enosapo.com/saitan/`）。
+
+### 面談日程調整ステップ追加（2026-06-03、commit `043e56d` / `aed9cc6`）— ⭐最重要
+
+送信フォーム CV の後段に「面談日程を選ぶ」ステップを追加し、**予約確定 → CRM に予定レコード作成 → 担当 CA の Google カレンダーに Meet 付きイベント自動作成**の 3 段を本番稼働させた。
+
+**フロー全体**:
+```
+[index.html] 日程選択 → 予約確定
+   ↓ POST /api/lp-booking-create   ← LP 中継（Vercel Edge、api/lp-booking-create.ts）
+     ・pool='shinsotsu' をサーバー側で強制注入（新卒プール、改ざん対策）
+     ・X-LP-Secret 付与して CRM へ転送
+   ↓ POST https://enovance-crm.vercel.app/api/lp-booking/create   ← CRM 側で実処理
+     ① assignAdvisor() 新卒プール（is_booking_advisor=true）の空き枠から CA 自動割当
+     ② crm_candidates を予定レコード化: status='booked' / first_meeting_scheduled_at
+        / assigned_ca_id / assigned_at / intake_type='prebooked'（service_role UPDATE）
+     ③ createCandidateCalendarEvent() 担当 CA の GCal に Meet 付きイベント自動作成（DWD）
+        → first_meeting_event_id / first_meeting_meet_url / first_meeting_synced_at 保存
+     ④ 予約確定メール送信（候補者がメール入力時のみ、自社ブランド控え）
+   ↓ { ok, ca_name, scheduled_at, meet_url, calendar_synced }
+[thanks.html] へ
+```
+
+**設計上の要点（再起動時に踏むべき前提）**:
+- 候補者レコードは**予約前に** `/api/lp/intake`（送信ステップ）で `status='lead'` として作成済。予約確定はその同じレコードを `booked` に更新する二段構え。
+- **CV を止めない fail-soft**: GCal 鍵未設定 / API 失敗 → 予約は成立扱い（`calendar_synced=false`）。CA 枠ゼロ（409）や予約失敗でも LP はサンクスへ進む。
+- **新卒プール固定**: 中継層が `pool='shinsotsu'` を必ず注入。ブラウザ側で別プールを送っても上書き。
+- 割当対象 CA の唯一の真実 = CRM ユーザー管理の `is_booking_advisor=true`（`crm_users`）。
+- 枠 = 平日 10:00-20:00 / **面談約 45 分**（当初「約 30 分」→ `aed9cc6` で 45 分に修正）。CRM 側 `getPoolConfig('shinsotsu')` の slots / durationMin が正。
+- 関連ファイル: LP = `api/lp-booking-create.ts` / `api/lp-booking-availability.ts`、CRM = `src/app/api/lp-booking/create/route.ts` + `src/lib/booking/{assignment,slots,calendar}.ts`。
+- 設計正本: memory `project_saitan_lp_booking_step`、CRM `docs/STATUS.md`「2026-06-03」、`secretary/notes/2026-06-03-decisions.md`。
+
+### ヒーロー見出し上に「27卒限定」バッジ追加（2026-06-10、commit `4816d9e`→`718145b`）
+
+「完全無料」バッジと同デザインで「27卒限定」バッジをヒーロー見出し上に追加。デザインは数回調整し、**最終形 = 金グラデーション**（一時ブランド赤×スキュー案 `375a5b2` は却下）。見出しのドット装飾（傍点）と被る問題を修正済（SP=小型化+上寄せ、PC=6px 上げ）。index.html のみ。
+
+### スラッシュ無し URL のパス崩れ対策（2026-05-27、commit `6d6121a`）
+
+`/saitan`（末尾スラッシュ無し）でアクセスした際にアセット相対パスが崩れる問題を、`/saitan/...` の絶対パスに変更して解消。あわせて `vercel.json` で `/saitan`・`/standard-c`・`/lp/board` の末尾スラッシュ無し URL を 308 リダイレクト（`832e695`、リポジトリ lp ルート）。
+
+### cv_complete を同一申込につき一度だけ push するガード（2026-07-13、commit `eecee7f`）— 最新
+
+thanks.html の GTM `dataLayer` への `event: cv_complete` push を、**同一申込（URL の `oid` パラメータ）につき一度だけ**発火するようガード追加。リロード / 戻る操作での二重計測を防止。`sessionStorage`（もしくは同等）で oid 単位の once-guard。VC / GA4 の CV 二重計上対策。
 
 ---
 
@@ -208,8 +257,8 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 - ✅ **PC レイアウト (thanks.html)**: Figma `pc_thanks` (66:3617) に合わせて全面書き換え完了（2026-05-10 朝）。Hero / Board Title は index.html と同一 CSS、`board__contents` 内側に `.thanks-container { max-width: 360px; margin: 0 auto; gap: 24px }` で Title 18px / Body 16px×3段落 mb16 / Button w-full 48h #ddd を配置。`/tmp/saitan-shots/diff-thanks.png` で Figma target と pixel-near 一致確認済。
 - ✅ **PC ワイドモニター対応** (2026-05-11 朝): `.lp { max-width: 1440px; margin: 0 auto; box-shadow }` + body グレー背景で 1920+ モニターで LP 中央寄せ雑誌レイアウト風。1440 viewport では従来通り Figma 一致。
 - ⚠️ **SP footer 「見えない」報告（オーナー継続中）**: Playwright fullPage では完全描画されている (`/tmp/saitan-shots/sp-footer-fix.png` / `sp-recheck.png` 全部 OK) が、オーナー実機 (PC Chrome DevTools mobile emu) で footer が画面下に隠れる報告継続。対策済み: `.lp { min-height: 100vh; min-height: 100dvh }` + `.footer { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) }`。最有力原因はブラウザキャッシュ → 次セッションでオーナーに `Cmd+Shift+R` / DevTools "Disable cache" 確認依頼 + 別端末/別ブラウザでの再現テスト推奨。
-- ⬜ **E2E テスト**: 未実施（CRM API への curl, ブラウザ実機確認）
-- ⬜ **本番デプロイ**: CRM 本番デプロイ待機中
+- ✅ **本番デプロイ**: `shukatsu.enosapo.com/saitan/` で稼働中。送信 → CRM intake、面談予約 → CRM 予定レコード → GCal 自動作成の 3 段とも本番反映済（2026-06-03〜、上記「🆕 2026-05-27〜07-13」節参照）
+- ⬜ **E2E テスト（自動）**: 自動 E2E は未整備。手動スモーク（フォーム送信 + 予約確定 + GCal 反映）は都度オーナー実機で確認する運用
 
 ---
 

@@ -1305,6 +1305,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   const BOOKING_SLOTS = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
   const WEEKDAY_JP = ['日','月','火','水','木','金','土'];
 
+  // 指名版 LP（例: /saitan/nomura/）は、配信パスから variant を決める。
+  // ⚠️ アドバイザー名は HTML に書かない。中継層（api/lp-booking-*.ts）が
+  //    variant → CRM 表示名を解決する（ブラウザから任意の CA を指名できないようにするため）。
+  const BOOKING_VARIANT = (function () {
+    const m = location.pathname.match(/^\/saitan\/([a-z0-9-]+)\/?$/);
+    return m ? m[1] : '';
+  })();
+  const VARIANT_QS = BOOKING_VARIANT ? '&variant=' + encodeURIComponent(BOOKING_VARIANT) : '';
+
   function startBookingStep(candidateId, goToThanks) {
     const wizard = document.getElementById('wizard');
     const screen = document.getElementById('booking-screen');
@@ -1358,7 +1367,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!opts.silent) slotsLabel.textContent = '空き枠を確認中...';
       let available = [];
       try {
-        const url = `/api/lp-booking-availability?date=${encodeURIComponent(dateKey)}&slots=${BOOKING_SLOTS.join(',')}`;
+        const url = `/api/lp-booking-availability?date=${encodeURIComponent(dateKey)}&slots=${BOOKING_SLOTS.join(',')}${VARIANT_QS}`;
         const res = await fetch(url);
         const json = await res.json().catch(() => null);
         if (json && Array.isArray(json.available)) available = json.available;
@@ -1391,7 +1400,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const res = await fetch('/api/lp-booking-create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ candidate_id: candidateId, date: dateKey, slot })
+          body: JSON.stringify({ candidate_id: candidateId, date: dateKey, slot, variant: BOOKING_VARIANT })
         });
         result = await res.json().catch(() => null);
       } catch (e) {}

@@ -11,6 +11,8 @@
 // リクエスト: GET /api/lp-booking-availability?date=YYYY-MM-DD&slots=10:00,11:00,...
 // レスポンス: { ok: true, available: ['10:00', ...] }（CRM のレスポンスをそのまま返す）
 
+import { resolveAdvisorName } from '../_shared/booking-variants';
+
 export const config = { runtime: 'edge' };
 
 const UPSTREAM_URL = 'https://enovance-crm.vercel.app/api/lp-booking/availability';
@@ -29,11 +31,15 @@ export default async function handler(req: Request): Promise<Response> {
   const incoming = new URL(req.url);
   const date = incoming.searchParams.get('date') ?? '';
   const slots = incoming.searchParams.get('slots') ?? '';
+  // 指名版 LP（/saitan/<variant>/）は variant → CRM 表示名をここで解決する。
+  // 対応表に無い値は無視（＝通常のプール自動割当に戻る）。
+  const advisorName = resolveAdvisorName(incoming.searchParams.get('variant'));
 
   const upstream = new URL(UPSTREAM_URL);
   if (date) upstream.searchParams.set('date', date);
   if (slots) upstream.searchParams.set('slots', slots);
   upstream.searchParams.set('pool', 'shinsotsu'); // 新卒プール固定
+  if (advisorName) upstream.searchParams.set('advisor', advisorName);
 
   try {
     const res = await fetch(upstream.toString(), {
