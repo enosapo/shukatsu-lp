@@ -7,8 +7,8 @@
     { "source": "/lp/board", "destination": "/lp/board/", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/saitan/nomura", "destination": "/saitan/index.html" },
-    { "source": "/saitan/nomura/", "destination": "/saitan/index.html" }
+    { "source": "/saitan/nomuratakuya", "destination": "/saitan/index.html" },
+    { "source": "/saitan/nomuratakuya/", "destination": "/saitan/index.html" }
   ],
   "headers": [
     {
@@ -21,7 +21,7 @@
       ]
     },
     {
-      "source": "/saitan/nomura(/?)",
+      "source": "/saitan/nomuratakuya(/?)",
       "headers": [
         {
           "key": "Cache-Control",

@@ -18,7 +18,7 @@
 //   3. CRM の「設定 > LP 管理 > saitan」に UTM 変種を足す（計測用、任意）
 
 export const BOOKING_ADVISOR_BY_VARIANT: Record<string, string> = {
-  nomura: '野村 拓矢',
+  nomuratakuya: '野村 拓矢',
 };
 
 /** variant スラッグを対応表で解決する。未知 / 未指定は null（＝通常のプール自動割当）。 */
