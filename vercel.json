@@ -2,13 +2,32 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
   "redirects": [
-    { "source": "/saitan", "destination": "/saitan/", "permanent": true },
-    { "source": "/standard-c", "destination": "/standard-c/", "permanent": true },
-    { "source": "/lp/board", "destination": "/lp/board/", "permanent": true }
+    {
+      "source": "/saitan",
+      "destination": "/saitan/",
+      "permanent": true
+    },
+    {
+      "source": "/standard-c",
+      "destination": "/standard-c/",
+      "permanent": true
+    },
+    {
+      "source": "/lp/board",
+      "destination": "/lp/board/",
+      "permanent": true
+    },
+    {
+      "source": "/saitan/nomuratakuya",
+      "destination": "/saitan/nomuratakuya/",
+      "permanent": true
+    }
   ],
   "rewrites": [
-    { "source": "/saitan/nomuratakuya", "destination": "/saitan/" },
-    { "source": "/saitan/nomuratakuya/", "destination": "/saitan/" }
+    {
+      "source": "/saitan/nomuratakuya/",
+      "destination": "/saitan/"
+    }
   ],
   "headers": [
     {
