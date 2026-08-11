@@ -1,6 +1,6 @@
 # saitan LP — Status & Handoff
 
-**最終更新**: 2026-07-16（STATUS を git 履歴に同期 — 面談日程調整ステップ / 27卒バッジ / cv_complete once-guard を反映）
+**最終更新**: 2026-08-12（**指名版 LP `/saitan/nomuratakuya/` を追加＝日程調整を野村 拓矢のみに固定**。本番反映・実測確認済。下記「🆕 2026-08-12」節参照）
 **ステータス**: ✅ **本番稼働中** — `https://shukatsu.enosapo.com/saitan/`。LP → CRM 送信 + 面談予約 → CRM 予定レコード → GCal 自動作成の 3 段が全て本番稼働（2026-06-03〜）
 **次セッションでの読み方**: このファイルだけ読めば現状把握できるよう自己完結的に記述。**直近の実装（2026-05-27〜07-13）は下記「🆕 2026-05-27〜07-13」節を最優先で読む**（それ以前の節は当時の作業ログ）。
 
@@ -78,6 +78,42 @@ marketing/shukatsu/lp/saitan/
 | `assets/` | Figma 由来 8 ファイル（hero/laurel×3/ribbon/bubble/dot×2）。月桂樹は SVG パスのみで「平均21日で内定」等のテキストは HTML 側でオーバーレイ実装。 | ✅ |
 | `submit.php` | LP からの POST を受けて CRM API に転送する自ドメイン中継。`X-LP-Secret` ヘッダーをここで付与（HTML 露出を回避）+ **Origin/Referer 自ドメイン照合**（2026-05-07 追加、secret 漏洩時の二段目防御）。`$UPSTREAM_URL` は本番値 `https://enovance-crm.vercel.app/api/lp/intake`（2026-05-11 訂正、`enovance.jp` ドメインは未取得のため Vercel デフォルトに統一）。`$LP_INTAKE_SECRET` のみデプロイ前に差し替えが必要。 | ✅ 保持 |
 | `.htaccess` | HTML / PHP のキャッシュ無効化。モバイル WebView で古い版が掴まれる事故防止。Apache 前提。 | ✅ 保持 |
+
+---
+
+## 🆕 2026-08-12 指名版 LP（`/saitan/nomuratakuya/` = 日程調整を野村 拓矢のみ）
+
+**配布 URL（TikTok「就サポ」向け）**
+```
+https://shukatsu.enosapo.com/saitan/nomuratakuya/?utm_source=tiktok&utm_medium=social&utm_campaign=saitan&utm_content=shusapo
+```
+
+**何をしたか**: saitan の日程調整ステップで、割当先を特定アドバイザー 1 名に固定できる仕組みを追加した。
+第 1 号が野村 拓矢さん。**HTML は複製していない**（`vercel.json` の rewrite で同じ `index.html` を別パスにも配信）。
+
+**構成**
+- `vercel.json`: `/saitan/nomuratakuya`（スラッシュ有無の両方）→ `/saitan/` に rewrite ＋ 同パスへ no-store ヘッダ
+- `saitan/index.html`: 配信パスから variant を判定し、空き枠取得 / 予約確定に `variant` を付与
+- `_shared/booking-variants.ts`: variant → CRM 表示名の対応表（中継層で解決）
+- `api/lp-booking-{availability,create}.ts`: variant を解決して `advisor` を付与
+- CRM 側: `getBookableAdvisors(pool, advisorName?)` でプール内の 1 名に絞る（main `47de485`）
+
+**外すと壊れるポイント**
+| 注意点 | 理由 |
+|---|---|
+| **アドバイザー名を HTML に書かない** | ブラウザが送るのは variant スラッグだけ。中継層（Edge）が名前に解決するので、URL 書き換えで任意の CA を指名できない |
+| **プールを迂回しない** | 新卒プール（`is_booking_advisor` かつ `specialty_type='shinsotsu'`）の中から表示名一致で絞る。一致しなければ母集団が空＝枠 0 件・予約不成立。黙って全員に戻すと「指名したのに別の CA が割り当たる」事故になる |
+| **rewrite の destination は `/saitan/`（`index.html` ではない）** | `cleanUrls: true` 下で `.html` を destination にすると 404 になる（2026-08-12 に実測） |
+| **スラッシュ正規化の 308 リダイレクトは置けない** | Vercel の redirect source は optional-trailing-slash で一致するため `/saitan/nomuratakuya` → `/saitan/nomuratakuya/` は自分自身にもマッチして無限ループになる。スラッシュ有無の両方を rewrite source に置く |
+| rewrite が使えるのは資産参照が全て絶対パス（`/saitan/...`、commit `6d6121a`）だから | 相対パスの LP で同じことをすると 404 になる |
+
+**運用上の注意**: 枠は野村さんの空きだけになる。プール全員から探す通常版より枠が減り、予約せずサンクスへ抜ける学生が増える（予約失敗でも CV は止めない fail-soft は維持）。
+
+**本番実測（2026-08-12）**
+- `/saitan/nomuratakuya/` `/saitan/nomuratakuya` とも 200（本番ドメイン・LP オリジンの両方）
+- 空き枠 API: 8/13 通常 6 枠 → 指名 3 枠／8/14 通常 10 枠 → 指名 8 枠。**指名版が通常版の部分集合**＝表示名一致・新卒プール在籍を実測で確認済
+
+**指名版を増やす手順**: ①`_shared/booking-variants.ts` に 1 行 ②`vercel.json` の rewrites に 1 行（スラッシュ有無の 2 本）③（任意）CRM に UTM 変種
 
 ---
 
