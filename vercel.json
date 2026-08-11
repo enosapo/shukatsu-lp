@@ -7,8 +7,8 @@
     { "source": "/lp/board", "destination": "/lp/board/", "permanent": true }
   ],
   "rewrites": [
-    { "source": "/saitan/nomuratakuya", "destination": "/saitan/index.html" },
-    { "source": "/saitan/nomuratakuya/", "destination": "/saitan/index.html" }
+    { "source": "/saitan/nomuratakuya", "destination": "/saitan/" },
+    { "source": "/saitan/nomuratakuya/", "destination": "/saitan/" }
   ],
   "headers": [
     {
