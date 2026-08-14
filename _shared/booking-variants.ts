@@ -19,6 +19,7 @@
 
 export const BOOKING_ADVISOR_BY_VARIANT: Record<string, string> = {
   nomuratakuya: '野村 拓矢',
+  asamiyusuke: '浅見 友介',
 };
 
 /** variant スラッグを対応表で解決する。未知 / 未指定は null（＝通常のプール自動割当）。 */

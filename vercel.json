@@ -26,6 +26,14 @@
     {
       "source": "/saitan/nomuratakuya/",
       "destination": "/saitan/"
+    },
+    {
+      "source": "/saitan/asamiyusuke",
+      "destination": "/saitan/"
+    },
+    {
+      "source": "/saitan/asamiyusuke/",
+      "destination": "/saitan/"
     }
   ],
   "headers": [
@@ -40,6 +48,15 @@
     },
     {
       "source": "/saitan/nomuratakuya(/?)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/saitan/asamiyusuke(/?)",
       "headers": [
         {
           "key": "Cache-Control",
