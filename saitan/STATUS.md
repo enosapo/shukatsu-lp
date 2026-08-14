@@ -1,6 +1,6 @@
 # saitan LP — Status & Handoff
 
-**最終更新**: 2026-08-12（**指名版 LP `/saitan/nomuratakuya/` を追加＝日程調整を野村 拓矢のみに固定**。本番反映・実測確認済。下記「🆕 2026-08-12」節参照）
+**最終更新**: 2026-08-14（**指名版 LP に浅見 友介 `/saitan/asamiyusuke/` を追加**＝送客サービス「杉原 陽仁」への配布用。本番反映・実測確認済。下記「🆕 2026-08-14」節参照）
 **ステータス**: ✅ **本番稼働中** — `https://shukatsu.enosapo.com/saitan/`。LP → CRM 送信 + 面談予約 → CRM 予定レコード → GCal 自動作成の 3 段が全て本番稼働（2026-06-03〜）
 **次セッションでの読み方**: このファイルだけ読めば現状把握できるよう自己完結的に記述。**直近の実装（2026-05-27〜07-13）は下記「🆕 2026-05-27〜07-13」節を最優先で読む**（それ以前の節は当時の作業ログ）。
 
@@ -78,6 +78,22 @@ marketing/shukatsu/lp/saitan/
 | `assets/` | Figma 由来 8 ファイル（hero/laurel×3/ribbon/bubble/dot×2）。月桂樹は SVG パスのみで「平均21日で内定」等のテキストは HTML 側でオーバーレイ実装。 | ✅ |
 | `submit.php` | LP からの POST を受けて CRM API に転送する自ドメイン中継。`X-LP-Secret` ヘッダーをここで付与（HTML 露出を回避）+ **Origin/Referer 自ドメイン照合**（2026-05-07 追加、secret 漏洩時の二段目防御）。`$UPSTREAM_URL` は本番値 `https://enovance-crm.vercel.app/api/lp/intake`（2026-05-11 訂正、`enovance.jp` ドメインは未取得のため Vercel デフォルトに統一）。`$LP_INTAKE_SECRET` のみデプロイ前に差し替えが必要。 | ✅ 保持 |
 | `.htaccess` | HTML / PHP のキャッシュ無効化。モバイル WebView で古い版が掴まれる事故防止。Apache 前提。 | ✅ 保持 |
+
+---
+
+## 🆕 2026-08-14 指名版 LP に浅見 友介を追加（`/saitan/asamiyusuke/`）
+
+**配布 URL（送客サービス「杉原 陽仁」向け）**
+```
+https://shukatsu.enosapo.com/saitan/asamiyusuke/?utm_source=sugihara&utm_medium=partner&utm_campaign=saitan
+```
+
+野村版と完全同型（commit `c07c099`）。変更は 2 ファイルのみ＝`_shared/booking-variants.ts` に 1 行、`vercel.json` に rewrite 2 本＋no-store ヘッダ 1 本。`index.html` は配信パスから variant を汎用に読むので無修正。**CRM 側の変更も不要**（`utm_source=sugihara` の LP 変種は migration `20260757` で本番適用済。パスは予約先の指名、UTM は流入計測で役割が独立）。
+
+**本番実測（2026-08-14）**
+- `/saitan/asamiyusuke` `/saitan/asamiyusuke/` UTM 付きとも 200
+- 空き枠 API：8/17 通常 4 枠 → 浅見 1 枠（18:00）／8/18 通常 7 枠 → 浅見 3 枠（17:00,19:00,20:00）＝**通常版の真部分集合**。表示名「浅見 友介」の一致と新卒プール在籍（`crm_users` で `is_booking_advisor=true` / `specialty_type='shinsotsu'` / `is_active=true` を実データ確認）を実測で裏取り済
+- ⚠️ 同時に測った野村版は 8/14・8/17・8/18 とも枠 0（カレンダーが埋まっている状態。仕組みの故障ではない）
 
 ---
 
